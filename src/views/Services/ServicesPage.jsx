@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { serviceCategories } from "../../data/serviceData";
+import ServicesAccordion from "./ServicesAccordion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -23,6 +24,18 @@ const C = {
 /* Photo for the big image section: save it as  public/services/team.jpg
    (or pass  images={{ team: "/your/photo.jpg" }} ). A sketch shows if it's missing. */
 const DEFAULT_IMAGES = { team: "/services/team.jpg" };
+
+/* Shape the data for the hover dropdown. Add  art / tag  to a category in serviceData to override these. */
+const ART_CYCLE = ["chart", "coins", "calc"];
+const ACCORDION_CATEGORIES = serviceCategories.map((c, i) => ({
+  id: c.slug,
+  title: c.name,
+  href: c.href,
+  art: c.art ?? ART_CYCLE[i % ART_CYCLE.length],
+  tag: c.tag ?? c.eyebrow,
+  intro: c.description,
+  items: c.items.map((s) => ({ name: s.name, description: s.description, href: s.href })),
+}));
 
 const INTRO =
   "Accounting, tax and advisory services tailored to you — whether you’re growing a business, building wealth, or navigating corporate complexity.";
@@ -152,37 +165,6 @@ const SectionTitle = ({ children, className = "" }) => (
   </h2>
 );
 
-/* Row button (Pal's long yellow buttons) */
-function Row({ href, title, note, meta }) {
-  return (
-    <a
-      href={href}
-      className="sp-row group flex items-center justify-between gap-4 rounded-2xl border border-[#DCE5F1] bg-[#E8F0FF] px-6 py-5 text-[#001022] shadow-[0_4px_18px_-14px_rgba(0,16,34,0.3)] transition-all duration-300 hover:border-[#001022] hover:bg-[#001022] hover:pl-8 hover:shadow-[0_14px_32px_-18px_rgba(0,16,34,0.45)] sm:py-6"
-    >
-      <span className="min-w-0">
-        <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          <span className="text-lg font-semibold transition-colors duration-300 group-hover:text-white sm:text-xl">
-            {title}
-          </span>
-          {meta && (
-            <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-[#0B3D91] transition-colors duration-300 group-hover:bg-white/10 group-hover:text-white">
-              {meta}
-            </span>
-          )}
-        </span>
-        {note && (
-          <span className="mt-1.5 block text-sm leading-relaxed text-[#475569] transition-colors duration-300 group-hover:text-white/70">
-            {note}
-          </span>
-        )}
-      </span>
-      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white text-[#001022] transition-colors duration-300 group-hover:bg-white">
-        <Arrow className="-rotate-45 transition-transform duration-300 group-hover:rotate-0" />
-      </span>
-    </a>
-  );
-}
-
 /* ───────── Page ───────── */
 export default function ServicesPage({ categorySlug, images = DEFAULT_IMAGES, contactHref = "/contact" }) {
   const root = useRef(null);
@@ -192,7 +174,7 @@ export default function ServicesPage({ categorySlug, images = DEFAULT_IMAGES, co
   const heroTitle = activeCategory ? activeCategory.name : "Tax advice that actually makes sense.";
   const heroLabel = activeCategory?.eyebrow ?? "Services";
   const intro = activeCategory?.description ?? INTRO;
-  const otherCategories = serviceCategories.filter(({ slug }) => slug !== categorySlug);
+  const activeIndex = ACCORDION_CATEGORIES.findIndex((c) => c.id === categorySlug);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -229,14 +211,6 @@ export default function ServicesPage({ categorySlug, images = DEFAULT_IMAGES, co
           });
         });
 
-        gsap.set(".sp-row", { opacity: 0, y: 30 });
-        ScrollTrigger.batch(".sp-row", {
-          start: "top 92%",
-          once: true,
-          onEnter: (batch) =>
-            gsap.to(batch, { opacity: 1, y: 0, duration: 0.7, stagger: 0.08, ease: "power3.out", overwrite: true }),
-        });
-
         const img = root.current?.querySelector(".sp-photo img");
         if (img) {
           gsap.fromTo(
@@ -256,8 +230,8 @@ export default function ServicesPage({ categorySlug, images = DEFAULT_IMAGES, co
   }, [categorySlug]);
 
   return (
-    <div ref={root} className="px-3 pb-10 pt-24 sm:px-5 sm:pt-28">
-      <div className="mx-auto max-w-[1400px]">
+    <div ref={root} className=" pb-10 pt-24 sm:pt-28">
+      <div className="mx-auto max-w-full">
         {/* 1. Hero card */}
         <div
           className="mx-auto max-w-6xl overflow-hidden rounded-[2rem] border px-6 py-12 sm:rounded-[2.5rem] sm:px-12 sm:py-16 md:grid md:grid-cols-[1.2fr_1fr] md:items-center md:gap-10"
@@ -300,39 +274,14 @@ export default function ServicesPage({ categorySlug, images = DEFAULT_IMAGES, co
           {intro}
         </p>
 
-        {/* 3. Explore (categories on the overview, services inside a category) */}
-        <section className="mx-auto mt-20 max-w-3xl px-2 md:mt-28" aria-labelledby="explore-title">
-          <SectionTitle className="sp-reveal text-center text-[clamp(1.75rem,3.6vw,2.75rem)]">
-            <span id="explore-title">{activeCategory ? `${activeCategory.name} services` : "Explore our services"}</span>
+        {/* 3. Explore: hover-to-expand dropdown (the open row stays open on a category page) */}
+        <section className="mt-20 max-w-full md:mt-28 pt-10 pb-20 bg-white" aria-labelledby="explore-title">
+          <SectionTitle className="sp-reveal px-2 text-center text-[clamp(1.75rem,3.6vw,2.75rem)]">
+            <span id="explore-title">Explore our services</span>
           </SectionTitle>
-          <div className="mt-8 space-y-3">
-            {activeCategory
-              ? activeCategory.items.map((s) => (
-                  <Row key={s.href} href={s.href} title={s.name} note={s.description} />
-                ))
-              : serviceCategories.map((c) => (
-                  <Row
-                    key={c.slug}
-                    href={c.href}
-                    title={c.name}
-                    note={c.description}
-                    meta={`${c.items.length} ${c.items.length === 1 ? "service" : "services"}`}
-                  />
-                ))}
+          <div className="sp-reveal mt-10 w-6xl mx-auto border-[#CBD5E1] ">
+            <ServicesAccordion categories={ACCORDION_CATEGORIES} restingIndex={activeIndex} />
           </div>
-
-          {activeCategory && otherCategories.length > 0 && (
-            <>
-              <SectionTitle className="sp-reveal mt-16 text-center text-[clamp(1.5rem,3vw,2.25rem)]">
-                Explore other areas
-              </SectionTitle>
-              <div className="mt-6 space-y-3">
-                {otherCategories.map((c) => (
-                  <Row key={c.slug} href={c.href} title={c.name} meta={`${c.items.length} services`} />
-                ))}
-              </div>
-            </>
-          )}
         </section>
 
         {/* 4. Built around you */}
@@ -417,6 +366,7 @@ export default function ServicesPage({ categorySlug, images = DEFAULT_IMAGES, co
             </div>
           )}
         </div>
+
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ const RootLayout = ({ children }) => {
   return (
     <div className="min-h-screen bg-[#FAFBFC]">
       <Navbar />
-      <main>{children}</main>
+      <main id="main-content">{children}</main>
       <Footer />
     </div>
   );

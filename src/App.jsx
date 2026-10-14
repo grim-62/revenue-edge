@@ -1,26 +1,51 @@
+import { useEffect } from "react";
+import { Navigate, Route, Routes, useLocation, useParams } from "react-router-dom";
 import Shaderbackground from "./components/Shaderbackground";
 import RootLayout from "./layouts/RootLayout";
+import AboutPage from "./views/About/About";
+import ContactPage from "./views/Contact/Contact";
 import Home from "./views/Home/Home";
 import ServiceDetailPage from "./views/Services/ServiceDetailPage";
 import ServicesPage from "./views/Services/ServicesPage";
 
+function ServiceDetailRoute() {
+  const { categorySlug, serviceSlug } = useParams();
+
+  return <ServiceDetailPage categorySlug={categorySlug} serviceSlug={serviceSlug} />;
+}
+
+function ServicesRoute() {
+  const { categorySlug } = useParams();
+
+  return <ServicesPage categorySlug={categorySlug} />;
+}
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
+
 const App = () => {
-  const path = window.location.pathname.replace(/\/+$/, "") || "/";
-  const serviceRoute = path.match(/^\/service\/([^/]+)(?:\/([^/]+))?$/);
-
-  let page = <Home />;
-  if (path === "/services") {
-    page = <ServicesPage />;
-  } else if (serviceRoute?.[2]) {
-    page = <ServiceDetailPage categorySlug={serviceRoute[1]} serviceSlug={serviceRoute[2]} />;
-  } else if (serviceRoute?.[1]) {
-    page = <ServicesPage categorySlug={serviceRoute[1]} />;
-  }
-
   return (
     <RootLayout>
       <Shaderbackground />
-      <div className="relative z-10">{page}</div>
+      <ScrollToTop />
+      <div className="relative z-10">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/services" element={<ServicesPage />} />
+          <Route path="/service/:categorySlug" element={<ServicesRoute />} />
+          <Route path="/service/:categorySlug/:serviceSlug" element={<ServiceDetailRoute />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </div>
     </RootLayout>
   );
 };

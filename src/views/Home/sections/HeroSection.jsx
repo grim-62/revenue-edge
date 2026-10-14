@@ -10,7 +10,6 @@ const C = {
   primary: "#001022",
   primaryHover: "#0B3D91",
   primaryLight: "#E8F0FF",
-  bg: "#FAFBFC",
   textSecondary: "#475569",
   border: "#E2E8F0",
   ink: "#0F172A",
@@ -20,7 +19,7 @@ const C = {
    with the `images` prop). If a file is missing, a pen sketch is shown instead. */
 const DEFAULT_IMAGES = {
   buildings: "https://i.pinimg.com/1200x/0f/55/7b/0f557b38ca48f71fc58d4af2cceeedeb.jpg",
-  suit: "/hero/suit.jpg", // professional in a suit adjusting his jacket
+  suit: "https://i.pinimg.com/736x/5b/cd/01/5bcd0112eaf556e1f57c05841cb1bc6b.jpg",
 };
 
 /* Headline lines. "@name" = photo sitting between the words. */
@@ -30,89 +29,26 @@ const LINES = [
   { tokens: ["YOUR", "GROWTH"], color: C.primaryHover },
 ];
 
-/* ───────── Pen-sketch fallback (only shows if a photo is missing) ───────── */
-const P = (props) => (
-  <path pathLength="1" strokeDasharray="1" className="draw" {...props} />
-);
-
-const Frame = ({ children }) => (
-  <svg
-    viewBox="0 0 100 100"
-    fill="none"
-    stroke={C.ink}
-    strokeWidth="2.6"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="h-full w-full"
-    aria-hidden="true"
-  >
-    {children}
-  </svg>
-);
-
-const ChartArt = () => (
-  <Frame>
-    <P d="M12 12v74h80" />
-    {[
-      [22, 20],
-      [38, 32],
-      [54, 46],
-      [70, 60],
-    ].map(([x, h]) => (
-      <g key={x}>
-        <P d={`M${x} 86V${86 - h}h11v${h}`} />
-        {[0, 1, 2, 3].map((i) => (
-          <P key={i} d={`M${x} ${84 - i * (h / 4.5)}l11 -6`} strokeWidth="1.2" />
-        ))}
-      </g>
-    ))}
-    <P d="M16 58L42 40l14 8 30-30" />
-    <P d="M74 18h12v12" />
-  </Frame>
-);
-
-const CalcArt = () => (
-  <Frame>
-    <g transform="rotate(-8 50 50)">
-      <P d="M22 14h56a4 4 0 0 1 4 4v62a4 4 0 0 1-4 4H22a4 4 0 0 1-4-4V18a4 4 0 0 1 4-4z" />
-      <P d="M27 20h46v15H27z" />
-      {[0, 1, 2, 3].map((r) =>
-        [0, 1, 2].map((c) => (
-          <P key={`${r}-${c}`} d={`M${28 + c * 16} ${42 + r * 10}h11v6h-11z`} strokeWidth="1.8" />
-        ))
-      )}
-    </g>
-    <P d="M70 96L94 58M74 98L98 60M94 58l4 2" />
-  </Frame>
-);
-
-const FALLBACK_ART = { buildings: ChartArt, suit: CalcArt };
-
 /* Photo that sits inline between words, same height as the letters */
 function PhotoChip({ name, images }) {
   const [failed, setFailed] = useState(false);
   const src = images?.[name];
-  const Art = FALLBACK_ART[name];
   const showPhoto = src && !failed;
 
   return (
-    <span className="hero-chip group relative top-[-0.02em] mx-[0.06em] inline-block h-[0.8em] w-[1.9em] align-middle">
+    <span className="hero-chip relative top-[-0.02em] mx-[0.06em] inline-block h-[0.8em] w-[1.9em] align-middle">
       <span
         className="hero-float block h-full w-full overflow-hidden rounded-[0.2em] border bg-white shadow-[0_10px_28px_-12px_rgba(0,16,34,0.45)]"
         style={{ borderColor: "rgba(255,255,255,0.9)" }}
       >
-        {showPhoto ? (
+        {showPhoto && (
           <img
             src={src}
             alt=""
             draggable={false}
             onError={() => setFailed(true)}
-            className="hero-img h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+            className="h-full w-full object-contain  object-cover"
           />
-        ) : (
-          <span className="block h-full w-full p-[0.1em]">
-            <Art />
-          </span>
         )}
       </span>
     </span>
@@ -205,14 +141,12 @@ export default function HeroSection({
           .timeline({ defaults: { ease: "power4.out" } })
           .from(".hero-badge", { y: 16, opacity: 0, duration: 0.6 })
           .from(".hero-word", { yPercent: 115, duration: 1, stagger: 0.06 }, "-=0.3")
-          /* photos wipe open left→right while the image settles from a slight zoom */
+          /* Reveal the inline photos from left to right. */
           .from(
             ".hero-chip",
             { clipPath: "inset(0% 100% 0% 0%)", duration: 1.1, ease: "power3.inOut", stagger: 0.2 },
             "-=0.8"
           )
-          .from(".hero-img", { scale: 1.35, duration: 1.4, ease: "power3.out", stagger: 0.2 }, "<")
-          .from(".draw", { strokeDashoffset: 1, duration: 1.2, ease: "power2.inOut", stagger: 0.015 }, "<")
           .from(".hero-fade", { y: 20, opacity: 0, duration: 0.7, stagger: 0.1 }, "-=0.9");
 
         gsap.to(".hero-float", {
@@ -229,11 +163,9 @@ export default function HeroSection({
   }, []);
 
   return (
-    <section id="home" ref={root} className="scroll-mt-24  px-3 pb-6 pt-20 sm:px-5 sm:pt-24">
-    {/* <section id="home" ref={root} className="scroll-mt-24 px-3 pb-6 pt-20 sm:px-5 sm:pt-24" style={{ backgroundColor: C.bg }}> */}
+    <section id="home" ref={root} className="scroll-mt-24 px-3 pb-6 pt-20 sm:px-5 sm:pt-24">
       <div
         className="mx-auto max-w-[1400px] rounded-[2rem] px-5 py-12 sm:rounded-[2.5rem] sm:px-10 sm:py-16 md:py-24 lg:py-10"
-        // style={{ backgroundColor: C.primaryLight, borderColor: C.border }}
       >
         <div className="mx-auto flex max-w-5xl flex-col items-center text-center lg:max-w-7xl">
           {/* badge */}
@@ -249,7 +181,7 @@ export default function HeroSection({
           <h1
             aria-label="Financial clarity to accelerate your growth"
             style={{ fontFamily: HEADING_FONT }}
-            className="mt-7 text-[clamp(2rem,6.4vw,5.9rem)] font-black uppercase leading-[1.05] tracking-[-0.035em] lg:max-w-6xl lg:text-[clamp(3.5rem,5vw,5.25rem)]"
+            className="mt-7 text-[clamp(2.5rem,6.4vw,5.9rem)] font-black uppercase leading-[1.05] tracking-[-0.035em] lg:max-w-6xl lg:text-[clamp(3.5rem,5vw,5.25rem)]"
           >
             <span aria-hidden="true">
               {LINES.map((l, i) => (

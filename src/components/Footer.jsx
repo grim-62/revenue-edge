@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -87,6 +88,22 @@ function Column({ title, children }) {
 
 const linkCls = "text-white/75 transition-colors duration-300 hover:text-white";
 
+function AppLink({ href, children, ...props }) {
+  if (href.startsWith("/")) {
+    return (
+      <Link to={href} {...props}>
+        {children}
+      </Link>
+    );
+  }
+
+  return (
+    <a href={href} {...props}>
+      {children}
+    </a>
+  );
+}
+
 /**
  * Footer
  *   links     – [{ label, href }]            main navigation
@@ -164,7 +181,7 @@ export default function Footer({
                 the next step together.
               </p>
             </div>
-            <a
+            <AppLink
               href={ctaHref}
               className="group inline-flex w-fit shrink-0 items-center gap-4 rounded-full bg-white py-1.5 pl-7 pr-1.5 text-[15px] font-semibold transition-colors duration-300 hover:bg-[#E8F0FF]"
               style={{ color: C.primary }}
@@ -176,7 +193,7 @@ export default function Footer({
               >
                 <Arrow className="-rotate-45 transition-transform duration-300 group-hover:rotate-0" />
               </span>
-            </a>
+            </AppLink>
           </div>
 
           {/* Columns */}
@@ -220,17 +237,17 @@ export default function Footer({
             <div className="grid grid-cols-2 gap-x-10 gap-y-12 sm:gap-x-16 md:flex md:gap-20">
               <Column title="Navigate">
                 {links.map((l) => (
-                  <a key={l.label} href={l.href} className={linkCls}>
+                  <AppLink key={l.label} href={l.href} className={linkCls}>
                     {l.label}
-                  </a>
+                  </AppLink>
                 ))}
               </Column>
 
               <Column title="Services">
                 {services.map((l) => (
-                  <a key={l.label} href={l.href} className={linkCls}>
+                  <AppLink key={l.label} href={l.href} className={linkCls}>
                     {l.label}
-                  </a>
+                  </AppLink>
                 ))}
               </Column>
 

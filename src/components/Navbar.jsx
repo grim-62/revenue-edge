@@ -1,15 +1,19 @@
 import { useEffect, useRef, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 const NAVIGATION = [
   { label: "Home", href: "/" },
   { label: "Services", href: "/services" },
-  { label: "About", href: "/#who-we-work-with" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
 ];
 
 const CTA = { label: "Book a consultation", href: "/contact" };
 
 /* Which nav item matches the current URL (path + hash) */
 function getActiveHref(path, hash) {
+  if (path.startsWith("/service/")) return "/services";
+
   const hashMatch = NAVIGATION.find((n) => {
     const [p, h] = n.href.split("#");
     return h && path === (p || "/") && hash === `#${h}`;
@@ -42,7 +46,8 @@ function ArrowIcon({ className = "" }) {
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [current, setCurrent] = useState(null);
+  const location = useLocation();
+  const current = getActiveHref(location.pathname, location.hash);
   const wrapRef = useRef(null);
   const buttonRef = useRef(null);
 
@@ -52,18 +57,6 @@ export default function Navbar() {
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  /* active link */
-  useEffect(() => {
-    const update = () => setCurrent(getActiveHref(window.location.pathname, window.location.hash));
-    update();
-    window.addEventListener("hashchange", update);
-    window.addEventListener("popstate", update);
-    return () => {
-      window.removeEventListener("hashchange", update);
-      window.removeEventListener("popstate", update);
-    };
   }, []);
 
   /* close the mobile menu: Escape, click outside, or growing to desktop width */
@@ -94,8 +87,7 @@ export default function Navbar() {
     return () => mq.removeEventListener("change", onChange);
   }, []);
 
-  const go = (href) => {
-    setCurrent(href);
+  const go = () => {
     setMenuOpen(false);
   };
 
@@ -118,11 +110,11 @@ export default function Navbar() {
           }`}
         >
           {/* Logo */}
-          <a
-            href="/"
+          <Link
+            to="/"
             aria-label="Revenue Edge home"
             className="flex shrink-0 items-center rounded-lg px-1 outline-none focus-visible:ring-2 focus-visible:ring-[#0B3D91]"
-            onClick={() => go("/")}
+            onClick={go}
           >
             <img
               src="/reta.png"
@@ -132,18 +124,18 @@ export default function Navbar() {
               decoding="async"
               className="h-9 w-auto sm:h-10 md:h-11"
             />
-          </a>
+          </Link>
 
           {/* Desktop links */}
           <div className="hidden items-center gap-1 md:flex">
             {NAVIGATION.map(({ label, href }) => {
               const active = current === href;
               return (
-                <a
+                <Link
                   key={label}
-                  href={href}
+                  to={href}
                   aria-current={active ? "page" : undefined}
-                  onClick={() => go(href)}
+                  onClick={go}
                   className={`rounded-full px-4 py-2 text-[15px] font-semibold outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-[#0B3D91] ${
                     active
                       ? "bg-[#E8F0FF] text-[#001022]"
@@ -151,20 +143,20 @@ export default function Navbar() {
                   }`}
                 >
                   {label}
-                </a>
+                </Link>
               );
             })}
 
-            <a
-              href={CTA.href}
-              onClick={() => go(CTA.href)}
+            <Link
+              to={CTA.href}
+              onClick={go}
               className="group ml-3 inline-flex items-center gap-3 rounded-full bg-[#001022] py-1.5 pl-5 pr-1.5 text-sm font-semibold text-white outline-none transition-colors duration-300 hover:bg-[#0B3D91] focus-visible:ring-2 focus-visible:ring-[#0B3D91] focus-visible:ring-offset-2"
             >
               {CTA.label}
               <span className="grid h-8 w-8 place-items-center rounded-full bg-white text-[#001022]">
                 <ArrowIcon className="-rotate-45 transition-transform duration-300 group-hover:rotate-0" />
               </span>
-            </a>
+            </Link>
           </div>
 
           {/* Mobile toggle */}
@@ -210,32 +202,32 @@ export default function Navbar() {
               const active = current === href;
               return (
                 <li key={label}>
-                  <a
-                    href={href}
+                  <Link
+                    to={href}
                     aria-current={active ? "page" : undefined}
-                    onClick={() => go(href)}
+                    onClick={go}
                     className={`flex items-center justify-between rounded-xl px-4 py-3.5 text-base font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#0B3D91] ${
                       active ? "bg-[#E8F0FF] text-[#001022]" : "text-slate-700 hover:bg-slate-50"
                     }`}
                   >
                     {label}
                     <ArrowIcon className="text-slate-400" />
-                  </a>
+                  </Link>
                 </li>
               );
             })}
           </ul>
 
-          <a
-            href={CTA.href}
-            onClick={() => go(CTA.href)}
+          <Link
+            to={CTA.href}
+            onClick={go}
             className="group mt-3 flex items-center justify-between rounded-full bg-[#001022] py-1.5 pl-6 pr-1.5 text-[15px] font-semibold text-white outline-none transition-colors hover:bg-[#0B3D91] focus-visible:ring-2 focus-visible:ring-[#0B3D91] focus-visible:ring-offset-2"
           >
             {CTA.label}
             <span className="grid h-10 w-10 place-items-center rounded-full bg-white text-[#001022]">
               <ArrowIcon className="-rotate-45 transition-transform duration-300 group-hover:rotate-0" />
             </span>
-          </a>
+          </Link>
         </div>
       </div>
     </header>
