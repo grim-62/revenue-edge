@@ -1,4 +1,5 @@
 import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -196,7 +197,7 @@ const CategoryRow = memo(function CategoryRow({ cat, index, isOpen, img, href, o
         id={`panel-${cat.id}`}
         role="region"
         aria-labelledby={`btn-${cat.id}`}
-        inert={!isOpen}
+        inert={!isOpen ? "" : undefined}
         className={`grid transition-[grid-template-rows] duration-500 ease-out ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
       >
         <div className="overflow-hidden">
@@ -213,8 +214,8 @@ const CategoryRow = memo(function CategoryRow({ cat, index, isOpen, img, href, o
                     className="-translate-x-4 opacity-0 transition-[opacity,transform] duration-500 ease-out group-data-[open=true]/panel:translate-x-0 group-data-[open=true]/panel:opacity-100 motion-reduce:translate-x-0 motion-reduce:opacity-100 motion-reduce:transition-none"
                     style={{ transitionDelay: isOpen ? `${120 + n * 60}ms` : "0ms" }}
                   >
-                    <a
-                      href={href}
+                    <Link
+                      to={href}
                       className="group/item relative flex items-center justify-between gap-4 border-b py-4 text-[17px] font-medium outline-none transition-[padding] duration-300 hover:pl-2 focus-visible:pl-2"
                       style={{ borderColor: C.border, color: C.primary }}
                     >
@@ -236,7 +237,7 @@ const CategoryRow = memo(function CategoryRow({ cat, index, isOpen, img, href, o
                         aria-hidden="true"
                         className="pointer-events-none absolute -bottom-px left-0 h-[2px] w-full origin-left scale-x-0 bg-gradient-to-r from-[#0B3D91] to-[#001022] transition-transform duration-300 ease-out group-hover/item:scale-x-100 group-hover/item:duration-[900ms] group-focus-visible/item:scale-x-100 group-focus-visible/item:duration-[900ms] motion-reduce:transition-none"
                       />
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -377,8 +378,8 @@ export default function SectionThree({ images, allServicesHref = "/services" }) 
 
         {/* CTA */}
         <div className="mt-14 flex justify-center">
-          <a
-            href={allServicesHref}
+          <Link
+            to={allServicesHref}
             className="sv-cta group inline-flex items-center gap-4 rounded-full py-1.5 pl-7 pr-1.5 text-[15px] font-semibold text-white transition-colors duration-300 hover:bg-[#0B3D91]"
             style={{ backgroundColor: C.primary }}
           >
@@ -386,7 +387,7 @@ export default function SectionThree({ images, allServicesHref = "/services" }) 
             <span className="grid h-10 w-10 place-items-center rounded-full" style={{ backgroundColor: C.primaryLight, color: C.primary }}>
               <ArrowUpRight className="transition-transform duration-300 group-hover:rotate-45" />
             </span>
-          </a>
+          </Link>
         </div>
       </div>
     </section>

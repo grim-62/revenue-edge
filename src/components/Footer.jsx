@@ -128,31 +128,40 @@ export default function Footer({
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: no-preference)", () => {
-        gsap.from(".ft-cta > *", {
-          y: 30,
-          opacity: 0,
-          duration: 0.9,
-          stagger: 0.12,
-          ease: "power3.out",
-          scrollTrigger: { trigger: ".ft-cta", start: "top 88%" },
-        });
-        gsap.from(".ft-brand, .ft-col", {
-          y: 24,
-          opacity: 0,
-          duration: 0.8,
-          stagger: 0.1,
-          ease: "power3.out",
-          scrollTrigger: { trigger: ".ft-grid", start: "top 90%" },
-        });
-        gsap.from(".ft-mark", {
-          yPercent: 30,
-          opacity: 0,
-          duration: 1.2,
-          ease: "power4.out",
-          scrollTrigger: { trigger: ".ft-mark", start: "top 100%" },
-        });
+        if (root.current?.querySelector(".ft-cta")) {
+          gsap.from(".ft-cta > *", {
+            y: 30,
+            opacity: 0,
+            duration: 0.9,
+            stagger: 0.12,
+            ease: "power3.out",
+            scrollTrigger: { trigger: ".ft-cta", start: "top 88%" },
+          });
+        }
+        if (root.current?.querySelector(".ft-brand, .ft-col")) {
+          gsap.from(".ft-brand, .ft-col", {
+            y: 24,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.1,
+            ease: "power3.out",
+            scrollTrigger: { trigger: ".ft-grid", start: "top 90%" },
+          });
+        }
+        if (root.current?.querySelector(".ft-mark")) {
+          gsap.from(".ft-mark", {
+            yPercent: 30,
+            opacity: 0,
+            duration: 1.2,
+            ease: "power4.out",
+            scrollTrigger: { trigger: ".ft-mark", start: "top 100%" },
+          });
+        }
       });
     }, root);
+
+    ScrollTrigger.refresh();
+
     return () => ctx.revert();
   }, []);
 

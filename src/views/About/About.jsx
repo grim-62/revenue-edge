@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { CalcArt, ChartArt, CoinsArt } from "../Home/sections/Sketches";
 
 const HEADING_FONT = '"Archivo", ui-sans-serif, system-ui, sans-serif';
+const HERO_TITLE = "Accounting built around clear advice.";
 
 const COLORS = {
   ink: "#001022",
@@ -52,6 +54,16 @@ function Arrow({ className = "" }) {
       <path d="M5 12h14M13 6l6 6-6 6" />
     </svg>
   );
+}
+
+function Words({ text }) {
+  return text.split(" ").map((word, index) => (
+    <span key={`${word}-${index}`}>
+      <span className="inline-block overflow-hidden py-[0.05em] align-bottom">
+        <span className="inline-block">{word}</span>
+      </span>{" "}
+    </span>
+  ));
 }
 
 function Photo({ src, alt, className = "", imageClassName = "" }) {
@@ -110,31 +122,28 @@ function StoryRow({ item, image, reverse = false }) {
 
 export default function AboutPage({ images = DEFAULT_IMAGES, contactHref = "/contact" }) {
   return (
-    <div className="bg-white px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
+    <div className=" px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
       <div className="mx-auto max-w-6xl">
-        <section className="relative isolate min-h-[26rem] overflow-hidden rounded-[1.5rem] bg-[#001022] sm:min-h-[34rem] sm:rounded-[2rem]">
-          <Photo
-            src={images?.hero}
-            alt="People meeting and working together"
-            className="absolute inset-0 -z-20 h-full w-full bg-[#001022]"
-            imageClassName="object-center"
-          />
-          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#001022]/90 via-[#001022]/60 to-[#001022]/10" />
-          <div className="flex min-h-[26rem] max-w-3xl flex-col justify-end px-6 py-10 sm:min-h-[34rem] sm:px-12 sm:py-14 md:px-16">
-            <span className="w-fit rounded-full border border-white/40 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-white backdrop-blur-sm">
-              About Revenue Edge
-            </span>
-            <h1
-              className="mt-6 text-[clamp(2.6rem,7.2vw,6.5rem)] font-black uppercase leading-[0.94] tracking-[-0.055em] text-white"
-              style={{ fontFamily: HEADING_FONT }}
-            >
-              Not just accountants.
-              <br />
-              Actual humans.
-            </h1>
-            <p className="mt-6 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg">
-              Clear advice, real partnership and a team that cares about what you’re building.
-            </p>
+        <section>
+          <div className="mx-auto max-w-6xl overflow-hidden rounded-[2rem] border border-[#E2E8F0] bg-[#E8F0FF] px-6 py-12 sm:rounded-[2.5rem] sm:px-12 sm:py-16 md:grid md:grid-cols-[1.2fr_1fr] md:items-center md:gap-10">
+            <div>
+              <span className="inline-flex rounded-full bg-white px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#001022]">
+                Our Story
+              </span>
+              <h1
+                aria-label={HERO_TITLE}
+                style={{ fontFamily: HEADING_FONT, color: COLORS.ink }}
+                className="mt-6 text-[clamp(2rem,5.2vw,4.4rem)] font-black uppercase leading-[1.02] tracking-[-0.035em]"
+              >
+                <span aria-hidden="true">
+                  <Words text={HERO_TITLE} />
+                </span>
+              </h1>
+            </div>
+
+            <div className="relative mx-auto h-56 w-full max-w-sm md:mt-0 md:h-72">
+              <img src="./img3.jpg" className="h-full w-full object-cover scale-3d" alt="" />
+            </div>
           </div>
         </section>
 
@@ -193,7 +202,7 @@ export default function AboutPage({ images = DEFAULT_IMAGES, contactHref = "/con
           ))}
         </section>
 
-        <section className="border-y border-slate-200 py-14 text-center sm:py-20">
+        <section className="border-y border-slate-700 py-14 text-center sm:py-20">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#0B3D91]">The bottom line</p>
           <h2
             className="mx-auto mt-4 max-w-3xl text-[clamp(2rem,5vw,4.25rem)] font-black uppercase leading-[1.02] tracking-[-0.045em]"
@@ -210,11 +219,12 @@ export default function AboutPage({ images = DEFAULT_IMAGES, contactHref = "/con
             className="group mt-8 inline-flex items-center gap-4 rounded-full bg-[#001022] py-2 pl-6 pr-2 text-sm font-semibold text-white transition-colors hover:bg-[#0B3D91] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0B3D91]"
           >
             Book a conversation
-            <span className="grid h-10 w-10 place-items-center rounded-full bg-[#BCD0FF] text-[#001022]">
-              <Arrow className="-rotate-45 transition-transform group-hover:rotate-0" />
-            </span>
+            <span className="grid h-8 w-8 place-items-center rounded-full bg-white text-[#001022]">
+                <Arrow className="-rotate-45 transition-transform duration-300 group-hover:rotate-0" />
+              </span>
           </Link>
         </section>
+        
       </div>
     </div>
   );

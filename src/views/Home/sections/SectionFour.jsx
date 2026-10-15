@@ -114,22 +114,16 @@ export default function SectionFour({ image = "/why/team.jpg" }) {
             className="wc-photo relative aspect-[4/3] w-full overflow-hidden rounded-[1.75rem] border"
             style={{ backgroundColor: C.primaryLight, borderColor: C.border }}
           >
-            {image && !failed ? (
+          
               <img
-                src={image}
+                src={'./img9.jpg'}
                 alt="The Revenue Edge team"
                 loading="lazy"
                 draggable={false}
                 onError={() => setFailed(true)}
                 className="h-full w-full object-cover"
               />
-            ) : (
-              <div className="grid h-full w-full place-items-center p-14">
-                <div className="h-full max-h-64 w-full max-w-64">
-                  <ChartArt />
-                </div>
-              </div>
-            )}
+            
           </div>
 
           {/* reasons */}

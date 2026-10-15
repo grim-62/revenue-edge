@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import gsap from "gsap";
 
 /* Needs this as the first line of src/index.css:
@@ -197,8 +198,8 @@ export default function HeroSection({
 
           {/* CTAs */}
           <div className="hero-fade mt-10 flex flex-col items-center gap-3 sm:flex-row">
-            <a
-              href={consultationHref}
+            <Link
+              to={consultationHref}
               className="group inline-flex items-center gap-4 rounded-full py-1.5 pl-7 pr-1.5 text-[15px] font-semibold text-white transition-colors duration-300 hover:bg-[#0B3D91]"
               style={{ backgroundColor: C.primary }}
             >
@@ -209,15 +210,15 @@ export default function HeroSection({
               >
                 <Arrow className="-rotate-45 transition-transform duration-300 group-hover:rotate-0" />
               </span>
-            </a>
+            </Link>
 
-            <a
-              href={servicesHref}
+            <Link
+              to={servicesHref}
               className="inline-flex items-center rounded-full border bg-white px-7 py-[14px] text-[15px] font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_-12px_rgba(0,16,34,0.35)]"
               style={{ borderColor: C.border, color: C.primary }}
             >
               Explore Our Services
-            </a>
+            </Link>
           </div>
 
           {/* trust row */}

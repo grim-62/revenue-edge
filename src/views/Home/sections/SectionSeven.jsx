@@ -103,23 +103,9 @@ export default function SectionSeven({ image = "/contact/team.jpg", endpoint, on
           className="ct-card mx-auto grid max-w-6xl overflow-hidden rounded-[2rem] border border-[#CBD5E1] bg-white p-4 shadow-[0_40px_90px_-40px_rgba(0,16,34,0.45)] sm:rounded-[2.5rem] sm:p-6 md:grid-cols-[0.9fr_1.1fr] md:gap-10 md:p-8"
         >
           {/* photo */}
-          <div className="relative min-h-72 overflow-hidden rounded-[1.5rem] bg-[#E8F0FF] md:min-h-[34rem]">
-            {image && !failed ? (
-              <img
-                src={image}
-                alt="Revenue Edge accountants"
-                loading="lazy"
-                draggable={false}
-                onError={() => setFailed(true)}
-                className="ct-photo absolute inset-0 h-full w-full object-cover"
-              />
-            ) : (
-              <div className="absolute inset-0 grid place-items-center p-14">
-                <div className="h-full max-h-72 w-full max-w-72">
-                  <CalcArt />
-                </div>
-              </div>
-            )}
+          <div className="relative min-h-72 overflow-hidden rounded-[1.5rem] md:min-h-[34rem]">
+           
+            <img src={'/img12.jpg'} alt="Revenue Edge accountants" loading="lazy" draggable={false} className="ct-photo absolute h-full w-full object-bottom object-contain" />
           </div>
 
           {/* form */}

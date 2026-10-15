@@ -1,4 +1,5 @@
 import { memo, useCallback, useEffect, useId, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -13,109 +14,57 @@ const C = {
   ink: "#0F172A",
 };
 
-/* ───────── Pen-sketch art (the "draw" animation is pure CSS, driven by the row's data-open) ───────── */
-const P = (props) => (
-  <path
-    pathLength="1"
-    strokeDasharray="1"
-    className="[stroke-dashoffset:1] transition-[stroke-dashoffset] duration-[1100ms] ease-in-out group-data-[open=true]/panel:[stroke-dashoffset:0] motion-reduce:[stroke-dashoffset:0] motion-reduce:transition-none"
-    {...props}
-  />
-);
-
-const Frame = ({ children }) => (
-  <svg
-    viewBox="0 0 100 100"
-    fill="none"
-    stroke={C.ink}
-    strokeWidth="2.2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="h-full w-full"
-    aria-hidden="true"
-  >
-    {children}
-  </svg>
-);
-
-const BARS = [
-  [22, 20],
-  [38, 32],
-  [54, 46],
-  [70, 60],
-];
-
-const CalcArt = () => (
-  <Frame>
-    <g transform="rotate(-8 50 50)">
-      <P d="M22 14h56a4 4 0 0 1 4 4v62a4 4 0 0 1-4 4H22a4 4 0 0 1-4-4V18a4 4 0 0 1 4-4z" />
-      <P d="M27 20h46v15H27z" />
-      {[0, 1, 2, 3].map((r) =>
-        [0, 1, 2].map((c) => (
-          <P key={`${r}-${c}`} d={`M${28 + c * 16} ${42 + r * 10}h11v6h-11z`} strokeWidth="1.6" />
-        ))
-      )}
-    </g>
-    <P d="M70 96L94 58M74 98L98 60M94 58l4 2" />
-  </Frame>
-);
-
-const ChartArt = () => (
-  <Frame>
-    <P d="M12 12v74h80" />
-    {BARS.map(([x, h]) => (
-      <g key={x}>
-        <P d={`M${x} 86V${86 - h}h11v${h}`} />
-        <P d={`M${x} ${84 - h / 3}l11 -6M${x} ${84 - (2 * h) / 3}l11 -6`} strokeWidth="1.1" />
-      </g>
-    ))}
-    <P d="M16 58L42 40l14 8 30-30" />
-    <P d="M74 18h12v12" />
-  </Frame>
-);
-
-const CoinsArt = () => (
-  <Frame>
-    <g transform="rotate(-6 50 50)">
-      {[74, 60, 46].map((y) => (
-        <g key={y}>
-          <P d={`M20 ${y}v8a30 9 0 0 0 60 0v-8`} />
-          <P d={`M20 ${y}a30 9 0 1 0 60 0a30 9 0 1 0-60 0`} />
-        </g>
-      ))}
-      <P d="M20 32v8a30 9 0 0 0 60 0v-8" />
-      <P d="M20 32a30 9 0 1 0 60 0a30 9 0 1 0-60 0" />
-      <P d="M54 28c-5-3-11-1-9 3s10 2 9 6-8 4-11 1M49 24v16" strokeWidth="1.9" />
-    </g>
-  </Frame>
-);
-
-const ART = { chart: ChartArt, coins: CoinsArt, calc: CalcArt };
+const DEFAULT_CATEGORY_IMAGES = {
+  tax: "/img4.jpg",
+  accounting: "/img9.jpg",
+  "business-advisory": "/img2.jpg",
+  calc: "/img4.jpg",
+  chart: "/img1.jpg",
+  coins: "/img3.jpg",
+};
 
 const ArrowUpRight = ({ className = "" }) => (
-  <svg viewBox="0 0 24 24" className={`h-4 w-4 ${className}`} fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg
+    viewBox="0 0 24 24"
+    className={`h-4 w-4 ${className}`}
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.4"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
     <path d="M7 17L17 7M8 7h9v9" />
   </svg>
 );
 
 const PlusMinus = ({ open }) => (
   <span
-    className="relative grid h-11 w-11 shrink-0 place-items-center rounded-full border transition-colors duration-300 group-hover:bg-[#001022] group-hover:text-white"
+    className="relative grid h-9 w-9 shrink-0 place-items-center rounded-full border transition-colors duration-300 group-hover:bg-[#001022] group-hover:text-white sm:h-11 sm:w-11"
     style={{ borderColor: C.primary }}
     aria-hidden="true"
   >
     <span className="absolute h-[2px] w-4 bg-current" />
     <span
-      className={`absolute h-4 w-[2px] bg-current transition-transform duration-300 ${open ? "scale-y-0" : "scale-y-100"}`}
+      className={`absolute h-4 w-[2px] bg-current transition-transform duration-300 ${
+        open ? "scale-y-0" : "scale-y-100"
+      }`}
     />
   </span>
 );
 
 /* ───────── One row (memoised: only the rows that change re-render) ───────── */
 const CategoryRow = memo(function CategoryRow({ cat, index, uid, isOpen, img, onHover, onClick }) {
-  const Art = ART[cat.art] ?? ChartArt;
   const btnId = `${uid}-btn-${cat.id}`;
   const panelId = `${uid}-panel-${cat.id}`;
+
+  const imageSrc =
+    cat.image ||
+    cat.img ||
+    img ||
+    DEFAULT_CATEGORY_IMAGES[cat.id] ||
+    DEFAULT_CATEGORY_IMAGES[cat.art] ||
+    "/img1.jpg";
 
   return (
     <div
@@ -131,11 +80,11 @@ const CategoryRow = memo(function CategoryRow({ cat, index, uid, isOpen, img, on
           aria-expanded={isOpen}
           aria-controls={panelId}
           onClick={(e) => onClick(index, e.detail)}
-          className="group flex w-full items-center justify-between gap-6 py-7 text-left outline-none focus-visible:ring-2 focus-visible:ring-[#0B3D91] md:py-9"
+          className="group flex w-full items-center justify-between gap-3 py-5 text-left outline-none focus-visible:ring-2 focus-visible:ring-[#0B3D91] sm:gap-6 sm:py-7 md:py-9"
           style={{ color: C.primary }}
         >
           <span className="flex flex-wrap items-center gap-x-4 gap-y-2">
-            <span className="text-2xl font-semibold tracking-tight transition-transform duration-300 group-hover:translate-x-1 md:text-4xl">
+            <span className="text-xl font-semibold tracking-tight transition-transform duration-300 group-hover:translate-x-1 sm:text-2xl md:text-4xl">
               {cat.title}
             </span>
             <span
@@ -153,11 +102,13 @@ const CategoryRow = memo(function CategoryRow({ cat, index, uid, isOpen, img, on
         id={panelId}
         role="region"
         aria-labelledby={btnId}
-        inert={!isOpen}
-        className={`grid transition-[grid-template-rows] duration-500 ease-out ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
+        inert={!isOpen ? "" : undefined}
+        className={`grid transition-[grid-template-rows] duration-500 ease-out ${
+          isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        }`}
       >
         <div className="overflow-hidden">
-          <div className="grid gap-10 pb-12 pt-2 md:grid-cols-2 md:items-center md:gap-16">
+          <div className="grid gap-7 pb-9 pt-2 sm:gap-10 sm:pb-12 md:grid-cols-2 md:items-center md:gap-16">
             {/* services list */}
             <div>
               {cat.intro && (
@@ -165,7 +116,7 @@ const CategoryRow = memo(function CategoryRow({ cat, index, uid, isOpen, img, on
                   {cat.intro}
                 </p>
               )}
-              <ul className="mt-8">
+              <ul className="mt-6 sm:mt-8">
                 {cat.items.map((raw, n) => {
                   const item = typeof raw === "string" ? { name: raw, href: cat.href } : raw;
                   return (
@@ -174,8 +125,8 @@ const CategoryRow = memo(function CategoryRow({ cat, index, uid, isOpen, img, on
                       className="-translate-x-4 opacity-0 transition-[opacity,transform] duration-500 ease-out group-data-[open=true]/panel:translate-x-0 group-data-[open=true]/panel:opacity-100 motion-reduce:translate-x-0 motion-reduce:opacity-100 motion-reduce:transition-none"
                       style={{ transitionDelay: isOpen ? `${120 + n * 60}ms` : "0ms" }}
                     >
-                      <a
-                        href={item.href ?? cat.href}
+                      <Link
+                        to={item.href ?? cat.href}
                         className="group/item relative flex items-center justify-between gap-4 border-b py-4 outline-none transition-[padding] duration-300 hover:pl-2 focus-visible:pl-2"
                         style={{ borderColor: C.border, color: C.primary }}
                       >
@@ -184,9 +135,14 @@ const CategoryRow = memo(function CategoryRow({ cat, index, uid, isOpen, img, on
                             {String(n + 1).padStart(2, "0")}
                           </span>
                           <span>
-                            <span className="block text-[17px] font-medium">{item.name}</span>
+                            <span className="block text-[15px] font-medium sm:text-[17px]">
+                              {item.name}
+                            </span>
                             {item.description && (
-                              <span className="mt-1 block text-sm leading-relaxed" style={{ color: C.textSecondary }}>
+                              <span
+                                className="mt-1 block text-sm leading-relaxed"
+                                style={{ color: C.textSecondary }}
+                              >
                                 {item.description}
                               </span>
                             )}
@@ -204,34 +160,35 @@ const CategoryRow = memo(function CategoryRow({ cat, index, uid, isOpen, img, on
                           aria-hidden="true"
                           className="pointer-events-none absolute -bottom-px left-0 h-[2px] w-full origin-left scale-x-0 bg-gradient-to-r from-[#0B3D91] to-[#001022] transition-transform duration-300 ease-out group-hover/item:scale-x-100 group-hover/item:duration-[900ms] group-focus-visible/item:scale-x-100 group-focus-visible/item:duration-[900ms] motion-reduce:transition-none"
                         />
-                      </a>
+                      </Link>
                     </li>
                   );
                 })}
               </ul>
 
               {cat.href && (
-                <a
-                  href={cat.href}
+                <Link
+                  to={cat.href}
                   className="group/all mt-6 inline-flex items-center gap-3 rounded-full border px-5 py-2.5 text-sm font-semibold outline-none transition-colors duration-300 hover:bg-[#001022] hover:text-white focus-visible:ring-2 focus-visible:ring-[#0B3D91]"
-                  style={{ borderColor: C.primary, color: C.primary }}
                 >
                   Explore {cat.title}
                   <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover/all:rotate-45" />
-                </a>
+                </Link>
               )}
             </div>
 
-            {/* illustration */}
+            {/* image */}
             <div
-              className="relative mx-auto aspect-[5/4] w-full max-w-lg scale-90 -rotate-[5deg] rounded-[2rem] border p-10 opacity-0 transition-[opacity,transform] duration-700 [transition-timing-function:cubic-bezier(0.34,1.56,0.64,1)] group-data-[open=true]/panel:scale-100 group-data-[open=true]/panel:rotate-0 group-data-[open=true]/panel:opacity-100 group-data-[open=true]/panel:delay-150 motion-reduce:scale-100 motion-reduce:rotate-0 motion-reduce:opacity-100 motion-reduce:transition-none sm:p-14"
+              className="relative mx-auto aspect-[5/4] w-full max-w-lg scale-90 -rotate-[5deg] rounded-2xl border  opacity-0 transition-[opacity,transform] duration-700 [transition-timing-function:cubic-bezier(0.34,1.56,0.64,1)] group-data-[open=true]/panel:scale-100 group-data-[open=true]/panel:rotate-0 group-data-[open=true]/panel:opacity-100 group-data-[open=true]/panel:delay-150 motion-reduce:scale-100 motion-reduce:rotate-0 motion-reduce:opacity-100 motion-reduce:transition-none sm:rounded-[2rem]"
               style={{ backgroundColor: C.primaryLight, borderColor: C.border }}
             >
-              {img ? (
-                <img src={img} alt="" draggable={false} loading="lazy" className="h-full w-full object-contain mix-blend-multiply" />
-              ) : (
-                <Art />
-              )}
+              <img
+                src={imageSrc}
+                alt={cat.title}
+                draggable={false}
+                loading="lazy"
+                className="h-full w-full object-cover  mix-blend-multiply"
+              />
               {cat.tag && (
                 <span
                   className="absolute bottom-5 left-5 -rotate-3 rounded-full border bg-white px-4 py-2 text-xs font-semibold shadow-[0_8px_24px_-10px_rgba(0,16,34,0.35)]"
@@ -249,11 +206,11 @@ const CategoryRow = memo(function CategoryRow({ cat, index, uid, isOpen, img, on
 });
 
 /**
- * Hover-to-expand services dropdown.
- *   categories   – [{ id, title, href, art: "chart"|"coins"|"calc", tag, intro,
+ * Hover-to-expand services dropdown with images.
+ *   categories   – [{ id, title, href, image, tag, intro,
  *                     items: [{ name, description, href }] }]
  *   restingIndex – row that stays open when the mouse isn't over the list (-1 = all closed)
- *   images       – optional { chart, coins, calc } PNG overrides for the sketches
+ *   images       – optional { tax, accounting, "business-advisory" } image overrides
  * Mouse: hover opens a row. Touch / keyboard: tap or Enter toggles it.
  */
 export default function ServicesAccordion({ categories, restingIndex = -1, images }) {
@@ -268,7 +225,7 @@ export default function ServicesAccordion({ categories, restingIndex = -1, image
 
   const onHover = useCallback((i) => {
     clearTimeout(timer.current);
-    timer.current = setTimeout(() => setOpen(i), 90); // small delay avoids flicker when the mouse just passes by
+    timer.current = setTimeout(() => setOpen(i), 90);
   }, []);
 
   const onLeave = useCallback(() => {
@@ -279,7 +236,6 @@ export default function ServicesAccordion({ categories, restingIndex = -1, image
   const onClick = useCallback((i, detail) => {
     clearTimeout(timer.current);
     const hoverDevice = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-    // a mouse click keeps the hovered row open; tap and keyboard toggle it
     setOpen((prev) => (hoverDevice && detail > 0 ? i : prev === i ? -1 : i));
   }, []);
 
@@ -290,16 +246,21 @@ export default function ServicesAccordion({ categories, restingIndex = -1, image
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: no-preference)", () => {
-        gsap.from(".sv-row", {
-          y: 40,
-          opacity: 0,
-          duration: 0.8,
-          stagger: 0.12,
-          ease: "power3.out",
-          scrollTrigger: { trigger: root.current, start: "top 85%" },
-        });
+        if (root.current?.querySelector(".sv-row")) {
+          gsap.from(".sv-row", {
+            y: 40,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.12,
+            ease: "power3.out",
+            scrollTrigger: { trigger: root.current, start: "top 85%" },
+          });
+        }
       });
     }, root);
+
+    ScrollTrigger.refresh();
+
     return () => ctx.revert();
   }, []);
 
@@ -323,7 +284,7 @@ export default function ServicesAccordion({ categories, restingIndex = -1, image
           index={i}
           uid={uid}
           isOpen={open === i}
-          img={images?.[cat.art]}
+          img={cat.image ?? images?.[cat.id] ?? images?.[cat.art]}
           onHover={onHover}
           onClick={onClick}
         />

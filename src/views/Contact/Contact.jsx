@@ -63,7 +63,7 @@ export default function ContactPage() {
                   <dd className="mt-1 font-medium leading-relaxed text-[#001022]">
                     Suite 00, 123 Example Street
                     <br />
-                    Sydney NSW 2000, Australia
+                    Melbourne Victoria, Australia
                   </dd>
                 </div>
                 <div className="grid gap-5 sm:grid-cols-2">
@@ -114,7 +114,7 @@ export default function ContactPage() {
               </svg>
               <div className="absolute bottom-5 left-5 rounded-2xl border border-white/70 bg-white/90 px-5 py-4 shadow-lg backdrop-blur">
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#0B3D91]">Example location</p>
-                <p className="mt-1 font-bold text-[#001022]">Sydney, Australia</p>
+                <p className="mt-1 font-bold text-[#001022]">Melbourne Victoria, Australia</p>
               </div>
             </div>
           </div>
