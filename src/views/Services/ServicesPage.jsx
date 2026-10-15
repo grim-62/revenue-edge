@@ -9,9 +9,6 @@ import {
   serviceCategories,
 } from "../../data/serviceData";
 import ServicesAccordion from "./ServicesAccordion";
-import { CalcArt, ChartArt, CoinsArt, SKETCHES } from "../Home/sections/Sketches";
-
-gsap.registerPlugin(ScrollTrigger);
 
 const HEADING_FONT = '"Archivo", ui-sans-serif, system-ui, sans-serif';
 
@@ -26,11 +23,6 @@ const C = {
   ink: "#0F172A",
 };
 
-/* Photo for the big image section: save it as  public/services/team.jpg
-   (or pass  images={{ team: "/your/photo.jpg" }} ). A sketch shows if it's missing. */
-const DEFAULT_IMAGES = { team: "/services/team.jpg" };
-
-/* Shape the data for the hover dropdown. Add  art / tag  to a category in serviceData to override these. */
 const ART_CYCLE = ["chart", "coins", "calc"];
 const ACCORDION_CATEGORIES = serviceCategories.map((c, i) => ({
   id: c.slug,
@@ -51,12 +43,6 @@ const HERO_TITLES = {
   accounting: "Accurate records designed for growth.",
   "business-advisory": "Strategic business guidance for growth.",
 };
-
-/* ───────── Pen sketches with a soft-blue accent ───────── */
-const P = (props) => (
-  <path pathLength="1" strokeDasharray="1" className="draw" {...props} />
-);
-const Accent = (props) => <path className="sp-accent" stroke="none" fill={C.accent} {...props} />;
 
 const Words = ({ text = "" }) =>
   (text || "").split(" ").map((w, i) => (
@@ -91,7 +77,7 @@ const Arrow = ({ className = "" }) => (
   </svg>
 );
 
-export default function ServicesPage({ categorySlug: propCat, images = DEFAULT_IMAGES }) {
+export default function ServicesPage({ categorySlug: propCat }) {
   const root = useRef(null);
   const params = useParams();
   const categorySlug = propCat || params.categorySlug;
@@ -242,9 +228,10 @@ export default function ServicesPage({ categorySlug: propCat, images = DEFAULT_I
 
       {/* 5. Sketch + stage-of-growth heading */}
       <section className="mx-auto mt-20 max-w-3xl px-2 text-center md:mt-28">
-        <div className="sp-sketch sp-reveal mx-auto h-32 w-32">
+        <div className="sp-sketch sp-reveal mx-auto h-45 w-45">
           <img
-            src="/Coins.png"
+            className="w-full h-full object-cover"
+            src="./bookgirl.png"
             alt="Coins"
             draggable={false}
             onError={(e) => {

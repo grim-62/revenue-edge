@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { CalcArt } from "./Sketches";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -45,10 +44,9 @@ const Arrow = ({ className = "" }) => (
  *   endpoint  – URL that accepts a JSON POST (Formspree, your API, etc.)
  *   onSubmit  – async (data) => {} that sends it however you like
  */
-export default function SectionSeven({ image = "/contact/team.jpg", endpoint, onSubmit }) {
+export default function SectionSeven({ endpoint, onSubmit }) {
   const root = useRef(null);
   const [status, setStatus] = useState("idle"); // idle | sending | sent | error
-  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     const ctx = gsap.context(() => {

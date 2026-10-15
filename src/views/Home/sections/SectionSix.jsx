@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { CoinsArt, ChartArt } from "./Sketches";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -217,12 +216,7 @@ export default function SectionSix({ reviews = PLACEHOLDER_REVIEWS, contactHref 
             </a>
           </div>
           <div className="mt-8 flex items-center justify-center gap-4 md:mt-0">
-            <div className="h-32 w-32 sm:h-40 sm:w-40">
-              <CoinsArt />
-            </div>
-            <div className="hidden h-32 w-32 sm:block sm:h-40 sm:w-40">
-              <ChartArt />
-            </div>
+            <img src="./img4.png" alt="" />
           </div>
         </div>
       </div>

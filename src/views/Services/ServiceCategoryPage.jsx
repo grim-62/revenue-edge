@@ -17,6 +17,7 @@ const C = {
   tint: "#F1F6FF",
   textSecondary: "#475569",
   border: "#E2E8F0",
+  white: "#fff",
 };
 
 const pad = (n) => String(n).padStart(2, "0");
@@ -57,7 +58,7 @@ function PillLink({ to, children, className = "" }) {
     <Link
       to={to}
       className={`group inline-flex items-center gap-4 rounded-full py-1.5 pl-7 pr-1.5 text-[15px] font-semibold text-white outline-none transition-colors duration-300 hover:bg-[#0B3D91] focus-visible:ring-2 focus-visible:ring-[#0B3D91] focus-visible:ring-offset-2 ${className}`}
-      style={{ backgroundColor: C.primary }}
+      style={{ backgroundColor: C.white }}
     >
       {children}
       <span className="grid h-10 w-10 place-items-center rounded-full" style={{ backgroundColor: C.primaryLight, color: C.primary }}>
@@ -69,14 +70,21 @@ function PillLink({ to, children, className = "" }) {
 
 /* Image with a placeholder that shows until a real image loads */
 function ImageSlot({ src, alt = "", label, className = "" }) {
+  const [prevSrc, setPrevSrc] = useState(src);
   const [failed, setFailed] = useState(false);
-  useEffect(() => setFailed(false), [src]);
+  if (src !== prevSrc) {
+    setPrevSrc(src);
+    setFailed(false);
+  }
   const ok = src && !failed;
 
   return (
-    <div className={`relative overflow-hidden ${className}`} style={{ backgroundColor: C.primaryLight }}>
+    <div 
+        className={`relative overflow-hidden ${className} `} 
+        // style={{ backgroundColor: C.primaryLight }}
+    >
       {ok ? (
-        <img src={src} alt={alt} loading="lazy" draggable={false} onError={() => setFailed(true)} className="h-full w-full object-cover" />
+        <img src={src} alt={alt} loading="lazy" draggable={false} onError={() => setFailed(true)} className="h-full w-full  object-contain" />
       ) : (
         <div className="absolute inset-3 grid place-items-center rounded-[1.1rem] border-2 border-dashed border-[#93A8D6] px-4 text-center">
           <div>
@@ -162,11 +170,13 @@ export default function ServiceCategoryPage({ categorySlug: propCat, contactHref
   const category = getServiceCategory(categorySlug);
 
   const root = useRef(null);
+  const [prevSlug, setPrevSlug] = useState(categorySlug);
   const [openFaq, setOpenFaq] = useState(0);
-
-  useEffect(() => {
+  if (prevSlug !== categorySlug) {
+    setPrevSlug(categorySlug);
     setOpenFaq(0);
-  }, [categorySlug]);
+  }
+  console.log("ServiceCategoryPage: categorySlug", categorySlug, "category", category);
 
   useEffect(() => {
     if (!category) return undefined;
@@ -183,7 +193,14 @@ export default function ServiceCategoryPage({ categorySlug: propCat, contactHref
         }
 
         gsap.utils.toArray(".sc-reveal").forEach((el) => {
-          gsap.from(el, { y: 40, opacity: 0, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 88%" } });
+          gsap.from(el, {
+            y: 40,
+            opacity: 0,
+            duration: 0.8,
+            ease: "power3.out",
+            clearProps: "transform,opacity",
+            scrollTrigger: { trigger: el, start: "top 92%" },
+          });
         });
 
         if (root.current?.querySelector(".sc-card")) {
@@ -193,7 +210,8 @@ export default function ServiceCategoryPage({ categorySlug: propCat, contactHref
             duration: 0.8,
             stagger: 0.07,
             ease: "power3.out",
-            scrollTrigger: { trigger: ".sc-grid", start: "top 85%" },
+            clearProps: "transform,opacity",
+            scrollTrigger: { trigger: ".sc-grid", start: "top 88%" },
           });
         }
 
@@ -204,7 +222,8 @@ export default function ServiceCategoryPage({ categorySlug: propCat, contactHref
             duration: 0.8,
             stagger: 0.1,
             ease: "power3.out",
-            scrollTrigger: { trigger: ".sc-incls", start: "top 85%" },
+            clearProps: "transform,opacity",
+            scrollTrigger: { trigger: ".sc-incls", start: "top 90%" },
           });
         }
 
@@ -215,7 +234,8 @@ export default function ServiceCategoryPage({ categorySlug: propCat, contactHref
             duration: 0.9,
             stagger: 0.12,
             ease: "power3.out",
-            scrollTrigger: { trigger: ".sc-others", start: "top 85%" },
+            clearProps: "transform,opacity",
+            scrollTrigger: { trigger: ".sc-others", start: "top 95%" },
           });
         }
       });
@@ -330,16 +350,16 @@ export default function ServiceCategoryPage({ categorySlug: propCat, contactHref
           </div>
 
           <div className="sc-grid mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {category.items.map((item, i) => (
+            {(category?.items ?? []).map((item, i) => (
               <Link
-                key={item.href}
-                to={item.href}
-                className="sc-card group relative flex min-h-56 flex-col overflow-hidden rounded-[1.75rem] border border-[#E2E8F0] bg-white p-7 text-[#001022] outline-none transition-all duration-500 hover:-translate-y-1.5 hover:border-[#001022] hover:bg-[#001022] hover:text-white focus-visible:ring-2 focus-visible:ring-[#0B3D91]"
+                key={item.href || item.slug || i}
+                to={item.href || `/service/${category.slug}/${item.slug}`}
+                className="sc-card group relative flex min-h-56 flex-col overflow-hidden rounded-[1.75rem] border border-[#E2E8F0] bg-white p-7 text-[#001022] outline-none transition-[transform,background-color,border-color,color] duration-300 hover:-translate-y-1.5 hover:border-[#001022] hover:bg-[#001022] hover:text-white focus-visible:ring-2 focus-visible:ring-[#0B3D91]"
               >
-                <span className="text-sm font-semibold text-[#94A3B8] transition-colors duration-500 group-hover:text-white/50">{pad(i + 1)}</span>
-                <h3 className="mt-6 text-xl font-bold leading-tight tracking-tight">{item.name}</h3>
-                <p className="mt-3 line-clamp-3 flex-1 text-sm leading-relaxed text-[#475569] transition-colors duration-500 group-hover:text-white/70">
-                  {item.tagline}
+                <span className="text-sm font-semibold text-[#94A3B8] transition-colors duration-300 group-hover:text-white/50">{pad(i + 1)}</span>
+                <h3 className="mt-6 text-xl font-bold leading-tight tracking-tight">{item.name || item.title}</h3>
+                <p className="mt-3 line-clamp-3 flex-1 text-sm leading-relaxed text-[#475569] transition-colors duration-300 group-hover:text-white/70">
+                  {item.tagline || item.description}
                 </p>
                 <span className="mt-6 flex items-center justify-between text-sm font-semibold">
                   View service
@@ -426,41 +446,41 @@ export default function ServiceCategoryPage({ categorySlug: propCat, contactHref
         )}
 
         {/* 7. Other main services (bottom navigation) */}
-        {others.length > 0 && (
+        {others?.length > 0 && (
           <section className="mx-auto mt-24 max-w-6xl px-2 md:mt-32" aria-labelledby="other-title">
             <SectionTitle className="sc-reveal text-center text-[clamp(1.75rem,4vw,3.25rem)]">
               <span id="other-title">Explore other services</span>
             </SectionTitle>
 
             <div className="sc-others mt-10 grid gap-4 md:grid-cols-2">
-              {others.map((c, i) => {
+              {others?.map((c, i) => {
                 const label = i === 0 ? "Next" : i === others.length - 1 ? "Previous" : null;
                 return (
                   <Link
                     key={c.slug}
                     to={c.href}
-                    className="sc-other group flex min-h-64 flex-col rounded-[1.75rem] p-8 outline-none transition-all duration-500 hover:-translate-y-1.5 hover:bg-[#001022] focus-visible:ring-2 focus-visible:ring-[#0B3D91] sm:p-10"
+                    className="sc-other group flex min-h-64 flex-col rounded-[1.75rem] p-8 outline-none transition-[transform,background-color] duration-300 hover:-translate-y-1.5 hover:bg-[#001022] focus-visible:ring-2 focus-visible:ring-[#0B3D91] sm:p-10"
                     style={{ backgroundColor: C.primaryLight }}
                   >
                     <span className="flex items-center justify-between gap-3">
-                      <span className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#0B3D91] transition-colors duration-500 group-hover:bg-white/10 group-hover:text-white">
-                        {label ? `${label} · ` : ""}{c.items.length} services
+                      <span className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#0B3D91] transition-colors duration-300 group-hover:bg-white/10 group-hover:text-white">
+                        {label ? `${label} · ` : ""}{c.items?.length ?? 0} services
                       </span>
                     </span>
                     <h3
                       style={{ fontFamily: HEADING_FONT }}
-                      className="mt-6 text-[clamp(1.5rem,2.6vw,2.2rem)] font-black uppercase leading-[1.05] tracking-[-0.03em] text-[#001022] transition-colors duration-500 group-hover:text-white"
+                      className="mt-6 text-[clamp(1.5rem,2.6vw,2.2rem)] font-black uppercase leading-[1.05] tracking-[-0.03em] text-[#001022] transition-colors duration-300 group-hover:text-white"
                     >
                       {c.name}
                     </h3>
                     {(c.description ?? c.eyebrow) && (
-                      <p className="mt-3 line-clamp-2 flex-1 text-[15px] leading-relaxed text-[#475569] transition-colors duration-500 group-hover:text-white/70">
+                      <p className="mt-3 line-clamp-2 flex-1 text-[15px] leading-relaxed text-[#475569] transition-colors duration-300 group-hover:text-white/70">
                         {c.description ?? c.eyebrow}
                       </p>
                     )}
-                    <span className="mt-6 inline-flex items-center gap-3 text-sm font-semibold text-[#001022] transition-colors duration-500 group-hover:text-white">
+                    <span className="mt-6 inline-flex items-center gap-3 text-sm font-semibold text-[#001022] transition-colors duration-300 group-hover:text-white">
                       Explore {c.name}
-                      <span className="grid h-10 w-10 place-items-center rounded-full bg-[#001022] text-white transition-colors duration-500 group-hover:bg-white group-hover:text-[#001022]">
+                      <span className="grid h-10 w-10 place-items-center rounded-full bg-[#001022] text-white transition-colors duration-300 group-hover:bg-white group-hover:text-[#001022]">
                         <Arrow className="-rotate-45 transition-transform duration-300 group-hover:rotate-0" />
                       </span>
                     </span>

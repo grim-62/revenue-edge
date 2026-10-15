@@ -3,8 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 import { serviceCategories } from "../data/serviceData";
 
 const NAVIGATION = [
-  { label: "Services", href: "/services" },
-  { label: "About", href: "/about" },
+  { label: "Our Services", href: "/services" },
+  { label: "About Us", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -128,12 +128,14 @@ function MobileServices({ open, onNavigate, pathname }) {
     (cat) => pathname === cat.href || pathname.startsWith(`${cat.href}/`)
   );
   const [openCat, setOpenCat] = useState(activeCatIndex);
+  const [prevCatIndex, setPrevCatIndex] = useState(activeCatIndex);
 
-  useEffect(() => {
+  if (prevCatIndex !== activeCatIndex) {
+    setPrevCatIndex(activeCatIndex);
     if (activeCatIndex !== -1) {
       setOpenCat(activeCatIndex);
     }
-  }, [activeCatIndex]);
+  }
 
   return (
     <div
@@ -233,11 +235,13 @@ export default function Navbar() {
   }, []);
 
   /* close everything on route change */
-  useEffect(() => {
+  const [prevPath, setPrevPath] = useState(location.pathname);
+  if (prevPath !== location.pathname) {
+    setPrevPath(location.pathname);
     setMenuOpen(false);
     setServicesOpen(false);
     setMobileServicesOpen(false);
-  }, [location.pathname]);
+  }
 
   /* Escape / click outside close the menus */
   useEffect(() => {

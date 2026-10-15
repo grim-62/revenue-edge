@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { CalcArt, ChartArt, CoinsArt } from "../Home/sections/Sketches";
 
 const HEADING_FONT = '"Archivo", ui-sans-serif, system-ui, sans-serif';
 const HERO_TITLE = "Accounting built around clear advice.";

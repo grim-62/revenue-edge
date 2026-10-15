@@ -90,7 +90,7 @@ const categoryDefinitions = [
     art: "coins",
     tag: "Plan the next step",
     heroImage: "/img3.jpg",
-    partnerImage: "/img6.jpg",
+    partnerImage: "/img7.jpg",
     eyebrow: "A sharper view of what is next",
     description:
       "Senior guidance for the structures, plans, funding, and transitions that shape the future of your business.",

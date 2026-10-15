@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Route, Routes, useLocation, useParams } from "react-router-dom";
+import { Outlet, Route, Routes, useLocation, useParams } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Shaderbackground from "./components/Shaderbackground";
@@ -50,24 +50,30 @@ function ScrollToTop() {
 
   return null;
 }
-
-const App = () => {
+const WrapperRootLayout = ({ children }) => {
   return (
     <RootLayout>
       <Shaderbackground />
       <ScrollToTop />
-      <div className="relative z-10">
+      <div className="relative z-10">{children || <Outlet />}</div>
+    </RootLayout>
+  );
+};
+const App = () => {
+  return (
+    
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/services" element={<ServicesPage />} />
-          <Route path="/service/:categorySlug" element={<ServiceCategoryRoute />} />
-          <Route path="/service/:categorySlug/:serviceSlug" element={<ServiceDetailRoute />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/contact" element={<ContactPage />} />
+          <Route element={<WrapperRootLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/services" element={<ServicesPage />} />
+            <Route path="/service/:categorySlug" element={<ServiceCategoryRoute />} />
+            <Route path="/service/:categorySlug/:serviceSlug" element={<ServiceDetailRoute />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+          </Route>
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
-      </div>
-    </RootLayout>
+  
   );
 };
 

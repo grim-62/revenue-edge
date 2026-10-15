@@ -54,7 +54,7 @@ const PlusMinus = ({ open }) => (
 );
 
 /* ───────── One row (memoised: only the rows that change re-render) ───────── */
-const CategoryRow = memo(function CategoryRow({ cat, index, uid, isOpen, img, onHover, onClick }) {
+const CategoryRow = memo(function CategoryRow({ cat, index, uid, isOpen, img, onClick }) {
   const btnId = `${uid}-btn-${cat.id}`;
   const panelId = `${uid}-panel-${cat.id}`;
 
@@ -69,7 +69,6 @@ const CategoryRow = memo(function CategoryRow({ cat, index, uid, isOpen, img, on
   return (
     <div
       data-open={isOpen}
-      onPointerEnter={(e) => e.pointerType === "mouse" && onHover(index)}
       className="sv-row group/panel border-t"
       style={{ borderColor: C.primary }}
     >
@@ -79,7 +78,7 @@ const CategoryRow = memo(function CategoryRow({ cat, index, uid, isOpen, img, on
           id={btnId}
           aria-expanded={isOpen}
           aria-controls={panelId}
-          onClick={(e) => onClick(index, e.detail)}
+          onClick={() => onClick(index)}
           className="group flex w-full items-center justify-between gap-3 py-5 text-left outline-none focus-visible:ring-2 focus-visible:ring-[#0B3D91] sm:gap-6 sm:py-7 md:py-9"
           style={{ color: C.primary }}
         >
@@ -216,30 +215,16 @@ const CategoryRow = memo(function CategoryRow({ cat, index, uid, isOpen, img, on
 export default function ServicesAccordion({ categories, restingIndex = -1, images }) {
   const uid = useId();
   const root = useRef(null);
-  const timer = useRef(0);
+  const [prevResting, setPrevResting] = useState(restingIndex);
   const [open, setOpen] = useState(restingIndex);
-
-  useEffect(() => {
+  if (prevResting !== restingIndex) {
+    setPrevResting(restingIndex);
     setOpen(restingIndex);
-  }, [restingIndex]);
+  }
 
-  const onHover = useCallback((i) => {
-    clearTimeout(timer.current);
-    timer.current = setTimeout(() => setOpen(i), 90);
+  const onClick = useCallback((i) => {
+    setOpen((prev) => (prev === i ? -1 : i));
   }, []);
-
-  const onLeave = useCallback(() => {
-    clearTimeout(timer.current);
-    timer.current = setTimeout(() => setOpen(restingIndex), 180);
-  }, [restingIndex]);
-
-  const onClick = useCallback((i, detail) => {
-    clearTimeout(timer.current);
-    const hoverDevice = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-    setOpen((prev) => (hoverDevice && detail > 0 ? i : prev === i ? -1 : i));
-  }, []);
-
-  useEffect(() => () => clearTimeout(timer.current), []);
 
   /* scroll-in */
   useEffect(() => {
@@ -275,7 +260,6 @@ export default function ServicesAccordion({ categories, restingIndex = -1, image
       ref={root}
       className="border-b"
       style={{ borderColor: C.primary }}
-      onPointerLeave={(e) => e.pointerType === "mouse" && onLeave()}
     >
       {categories.map((cat, i) => (
         <CategoryRow
@@ -285,7 +269,6 @@ export default function ServicesAccordion({ categories, restingIndex = -1, image
           uid={uid}
           isOpen={open === i}
           img={cat.image ?? images?.[cat.id] ?? images?.[cat.art]}
-          onHover={onHover}
           onClick={onClick}
         />
       ))}

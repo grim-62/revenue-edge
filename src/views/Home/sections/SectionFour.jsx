@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ChartArt } from "./Sketches";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -54,10 +53,9 @@ const Plus = ({ open }) => (
   </span>
 );
 
-export default function SectionFour({ image = "/why/team.jpg" }) {
+export default function SectionFour() {
   const root = useRef(null);
   const [open, setOpen] = useState(0);
-  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -120,7 +118,6 @@ export default function SectionFour({ image = "/why/team.jpg" }) {
                 alt="The Revenue Edge team"
                 loading="lazy"
                 draggable={false}
-                onError={() => setFailed(true)}
                 className="h-full w-full object-cover"
               />
             
@@ -153,7 +150,7 @@ export default function SectionFour({ image = "/why/team.jpg" }) {
                       id={`why-panel-${i}`}
                       role="region"
                       aria-labelledby={`why-btn-${i}`}
-                      inert={!isOpen}
+                      inert={!isOpen ? "" : undefined}
                       className={`grid transition-[grid-template-rows] duration-400 ease-out ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
                     >
                       <div className="overflow-hidden">

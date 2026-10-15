@@ -59,8 +59,12 @@ const Check = () => (
 
 /* Image with a placeholder that shows until a real image loads */
 function ImageSlot({ src, alt = "", label, className = "" }) {
+  const [prevSrc, setPrevSrc] = useState(src);
   const [failed, setFailed] = useState(false);
-  useEffect(() => setFailed(false), [src]);
+  if (src !== prevSrc) {
+    setPrevSrc(src);
+    setFailed(false);
+  }
   const ok = src && !failed;
 
   return (
@@ -179,16 +183,18 @@ export default function ServiceDetailPage({ categorySlug: propCat, serviceSlug: 
   const serviceSlug = propSvc || params.serviceSlug;
 
   const root = useRef(null);
+  const slugKey = `${categorySlug}/${serviceSlug}`;
+  const [prevSlugKey, setPrevSlugKey] = useState(slugKey);
   const [openFaq, setOpenFaq] = useState(0);
+  if (prevSlugKey !== slugKey) {
+    setPrevSlugKey(slugKey);
+    setOpenFaq(0);
+  }
 
   const service = getServiceItem(categorySlug, serviceSlug);
   const category = service ? getServiceCategory(service.categorySlug || categorySlug) : null;
   const isWrongCategory = Boolean(service && categorySlug && service.categorySlug !== categorySlug);
   const isNotFound = !service || !category;
-
-  useEffect(() => {
-    setOpenFaq(0);
-  }, [categorySlug, serviceSlug]);
 
   useEffect(() => {
     if (isWrongCategory || isNotFound) return undefined;

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import ShaderBackground from "../components/Shaderbackground";
 
 const HEADING_FONT = '"Archivo", ui-sans-serif, system-ui, sans-serif';
 
@@ -12,7 +13,9 @@ const C = {
 
 export default function NotFoundPage() {
   return (
-    <div className="grid min-h-[70vh] place-items-center px-5 py-20 text-center">
+    <>
+    <ShaderBackground />
+    <div className="grid min-h-[100vh] place-items-center relative z-10 px-5 py-20 text-center">
       <div
         className="max-w-xl rounded-[2rem] border bg-white p-10 shadow-[0_30px_70px_-40px_rgba(0,16,34,0.4)]"
         style={{ borderColor: C.border }}
@@ -58,5 +61,6 @@ export default function NotFoundPage() {
         </Link>
       </div>
     </div>
+    </>
   );
 }

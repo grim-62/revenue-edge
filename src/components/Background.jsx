@@ -70,11 +70,12 @@ export default function PageBackground({
 }) {
   const root = useRef(null);
   const media = useRef(null);
-  const [reduced, setReduced] = useState(false);
+  const [reduced, setReduced] = useState(() =>
+    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReduced(mq.matches);
     const on = (e) => setReduced(e.matches);
     mq.addEventListener("change", on);
     return () => mq.removeEventListener("change", on);
