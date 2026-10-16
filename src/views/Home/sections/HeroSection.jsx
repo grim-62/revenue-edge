@@ -25,7 +25,7 @@ const DEFAULT_IMAGES = {
 
 /* Headline lines. "@name" = photo sitting between the words. */
 const LINES = [
-  { tokens: ["FINANCIAL", "CLARITY", "@buildings",], color: C.primary },
+  { tokens: ["FINANCIAL", "@buildings","CLARITY"], color: C.primary },
   { tokens: ["TO","@suit", "ACCELERATE"], color: C.primary },
   { tokens: ["YOUR", "GROWTH"], color: C.primaryHover },
 ];
