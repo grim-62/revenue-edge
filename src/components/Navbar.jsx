@@ -37,7 +37,7 @@ function ArrowIcon({ className = "" }) {
 
 function ChevronIcon({ className = "" }) {
   return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={`h-3.5 w-3.5 ${className}`} stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={`h-4 w-4 ${className}`} stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
       <path d="M6 9l6 6 6-6" />
     </svg>
   );
@@ -174,7 +174,7 @@ function MobileServices({ open, onNavigate, pathname }) {
                     aria-controls={`mobile-cat-${cat.slug}`}
                     className="grid h-9 w-9 place-items-center rounded-full text-slate-500 outline-none hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-[#0B3D91]"
                   >
-                    <ChevronIcon className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+                    <ChevronIcon className={`transition-transform duration-200 border rounded-full ${isOpen ? "rotate-180" : ""}`} />
                   </button>
                 </div>
 
@@ -457,7 +457,7 @@ export default function Navbar() {
                         aria-expanded={mobileServicesOpen}
                         aria-controls="mobile-services"
                       >
-                        <ChevronIcon className={`transition-transform duration-200 ${mobileServicesOpen ? "rotate-180" : ""}`} />
+                        <ChevronIcon className={`transition-transform rounded-full border duration-200 ${mobileServicesOpen ? "rotate-180" : ""}`} />
                       </button>
                     </div>
                     <MobileServices open={mobileServicesOpen} onNavigate={go} pathname={location.pathname} />
