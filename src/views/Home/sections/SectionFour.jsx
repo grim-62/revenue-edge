@@ -1,8 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
+import { deferGsap } from "../../../deferGsap";
 
 /* Needs this as the first line of src/index.css:
    @import url("https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&display=swap"); */
@@ -57,7 +54,7 @@ export default function SectionFour() {
   const root = useRef(null);
   const [open, setOpen] = useState(0);
 
-  useEffect(() => {
+  useEffect(() => deferGsap((gsap) => {
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: no-preference)", () => {
@@ -88,7 +85,7 @@ export default function SectionFour() {
       });
     }, root);
     return () => ctx.revert();
-  }, []);
+  }), []);
 
   return (
     <section id="why-choose-us" ref={root} className="px-3 py-6 sm:px-5">
@@ -150,7 +147,7 @@ export default function SectionFour() {
                       id={`why-panel-${i}`}
                       role="region"
                       aria-labelledby={`why-btn-${i}`}
-                      inert={!isOpen ? "" : undefined}
+                      inert={!isOpen}
                       className={`grid transition-[grid-template-rows] duration-400 ease-out ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
                     >
                       <div className="overflow-hidden">

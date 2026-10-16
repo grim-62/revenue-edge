@@ -1,8 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
+import { deferGsap } from "../../../deferGsap";
 
 /* Needs this as the first line of src/index.css:
    @import url("https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&display=swap"); */
@@ -69,7 +66,7 @@ export default function SectionSix({ reviews = PLACEHOLDER_REVIEWS, contactHref 
     return () => window.removeEventListener("resize", measure);
   }, [measure]);
 
-  useEffect(() => {
+  useEffect(() => deferGsap((gsap) => {
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: no-preference)", () => {
@@ -106,7 +103,7 @@ export default function SectionSix({ reviews = PLACEHOLDER_REVIEWS, contactHref 
       });
     }, root);
     return () => ctx.revert();
-  }, []);
+  }), []);
 
   return (
     <section id="testimonials" ref={root} className="px-3 py-6 sm:px-5">
@@ -216,7 +213,7 @@ export default function SectionSix({ reviews = PLACEHOLDER_REVIEWS, contactHref 
             </a>
           </div>
           <div className="mt-8 flex items-center justify-center gap-4 md:mt-0">
-            <img src="./img4.png" alt="" />
+            <img src="./img4.png" alt="" width="1200" height="960" loading="lazy" />
           </div>
         </div>
       </div>

@@ -1,9 +1,6 @@
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
+import { deferGsap } from "../../../deferGsap";
 
 /* Needs this as the first line of src/index.css:
    @import url("https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&display=swap"); */
@@ -197,7 +194,7 @@ const CategoryRow = memo(function CategoryRow({ cat, index, isOpen, img, href, o
         id={`panel-${cat.id}`}
         role="region"
         aria-labelledby={`btn-${cat.id}`}
-        inert={!isOpen ? "" : undefined}
+        inert={!isOpen}
         className={`grid transition-[grid-template-rows] duration-500 ease-out ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
       >
         <div className="overflow-hidden">
@@ -295,7 +292,7 @@ export default function SectionThree({ images, allServicesHref = "/services" }) 
   useEffect(() => () => clearTimeout(timer.current), []);
 
   /* scroll-in (only GSAP left in this section) */
-  useEffect(() => {
+  useEffect(() => deferGsap((gsap) => {
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: no-preference)", () => {
@@ -325,11 +322,16 @@ export default function SectionThree({ images, allServicesHref = "/services" }) 
       });
     }, root);
     return () => ctx.revert();
-  }, []);
+  }), []);
 
   /* the page height changes when a row opens/closes: refresh triggers once it settles (debounced) */
+  const previousOpen = useRef(open);
   useEffect(() => {
-    const t = setTimeout(() => ScrollTrigger.refresh(), 650);
+    if (previousOpen.current === open) return undefined;
+    previousOpen.current = open;
+    const t = setTimeout(() => {
+      import("gsap/ScrollTrigger").then(({ ScrollTrigger }) => ScrollTrigger.refresh());
+    }, 650);
     return () => clearTimeout(t);
   }, [open]);
 

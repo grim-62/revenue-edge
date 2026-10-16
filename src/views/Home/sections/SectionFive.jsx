@@ -1,12 +1,7 @@
 import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SKETCHES } from "./Sketches";
+import { deferGsap } from "../../../deferGsap";
 
-gsap.registerPlugin(ScrollTrigger);
-
-/* Needs this as the first line of src/index.css:
-   @import url("https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&display=swap"); */
 const HEADING_FONT = '"Archivo", ui-sans-serif, system-ui, sans-serif';
 
 const C = { primary: "#001022", primaryHover: "#0B3D91", border: "#E2E8F0" };
@@ -16,8 +11,6 @@ const TEXT = [
   "CASH", "FLOW", "SURPRISES,", "@coins", "TAX-TIME", "PANIC", "AND", "ENDLESS", "@calc", "PAPERWORK?",
   "WE’VE", "HANDLED", "IT", "ALL", "BEFORE,", "AND", "WE", "KNOW", "EXACTLY", "HOW", "TO", "HELP.", "@chart",
 ];
-
-const SPOKEN = "Cash flow surprises, tax-time panic and endless paperwork? We’ve handled it all before, and we know exactly how to help.";
 
 function Chip({ name }) {
   const Art = SKETCHES[name];
@@ -42,7 +35,7 @@ const Word = ({ children }) => (
 export default function SectionFive() {
   const root = useRef(null);
 
-  useEffect(() => {
+  useEffect(() => deferGsap((gsap) => {
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: no-preference)", () => {
@@ -66,7 +59,7 @@ export default function SectionFive() {
       });
     }, root);
     return () => ctx.revert();
-  }, []);
+  }), []);
 
   return (
     <section ref={root} className="px-3 py-6 sm:px-5">
@@ -80,17 +73,14 @@ export default function SectionFive() {
           }}
         >
           <p
-            aria-label={SPOKEN}
             style={{ fontFamily: HEADING_FONT }}
             className="mx-auto max-w-5xl text-[clamp(1.75rem,4.8vw,4.1rem)] font-black uppercase leading-[1.08] tracking-[-0.03em] text-white [text-wrap:balance]"
           >
-            <span aria-hidden="true">
-              {TEXT.map((t, i) => (
-                <span key={i}>
-                  {t.startsWith("@") ? <Chip name={t.slice(1)} /> : <Word>{t}</Word>}{" "}
-                </span>
-              ))}
-            </span>
+            {TEXT.map((t, i) => (
+              <span key={i}>
+                {t.startsWith("@") ? <Chip name={t.slice(1)} /> : <Word>{t}</Word>} {" "}
+              </span>
+            ))}
           </p>
         </div>
       </div>

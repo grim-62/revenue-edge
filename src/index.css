@@ -1,2 +1,17 @@
-@import url("https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&display=swap");
 @import "tailwindcss";
+
+@font-face {
+	font-family: "Archivo";
+	font-style: normal;
+	font-weight: 800;
+	font-display: optional;
+	src: url("@fontsource/archivo/files/archivo-latin-800-normal.woff2") format("woff2");
+}
+
+@font-face {
+	font-family: "Archivo";
+	font-style: normal;
+	font-weight: 900;
+	font-display: optional;
+	src: url("@fontsource/archivo/files/archivo-latin-900-normal.woff2") format("woff2");
+}

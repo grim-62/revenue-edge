@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import gsap from "gsap";
+import { deferGsap } from "../../../deferGsap";
 
-/* Needs this as the first line of src/index.css:
-   @import url("https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&display=swap"); */
 const HEADING_FONT = '"Archivo", ui-sans-serif, system-ui, sans-serif';
 
 /* Revenue Edge light theme */
@@ -19,8 +17,8 @@ const C = {
 /* Photos used in the headline. Save them in  public/hero/  (or pass your own paths
    with the `images` prop). If a file is missing, a pen sketch is shown instead. */
 const DEFAULT_IMAGES = {
-  buildings: "https://i.pinimg.com/1200x/0f/55/7b/0f557b38ca48f71fc58d4af2cceeedeb.jpg",
-  suit: "https://i.pinimg.com/736x/5b/cd/01/5bcd0112eaf556e1f57c05841cb1bc6b.jpg",
+  buildings: "https://i.pinimg.com/236x/0f/55/7b/0f557b38ca48f71fc58d4af2cceeedeb.jpg",
+  suit: "https://i.pinimg.com/236x/5b/cd/01/5bcd0112eaf556e1f57c05841cb1bc6b.jpg",
 };
 
 /* Headline lines. "@name" = photo sitting between the words. */
@@ -46,9 +44,13 @@ function PhotoChip({ name, images }) {
           <img
             src={src}
             alt=""
+            width={236}
+            height={name === "buildings" ? 236 : 169}
+            loading="eager"
+            fetchPriority={name === "buildings" ? "high" : "auto"}
             draggable={false}
             onError={() => setFailed(true)}
-            className="h-full w-full object-contain  object-cover"
+            className="h-full w-full object-cover"
           />
         )}
       </span>
@@ -134,7 +136,7 @@ export default function HeroSection({
 }) {
   const root = useRef(null);
 
-  useEffect(() => {
+  useEffect(() => deferGsap((gsap) => {
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: no-preference)", () => {
@@ -161,7 +163,7 @@ export default function HeroSection({
       });
     }, root);
     return () => ctx.revert();
-  }, []);
+  }), []);
 
   return (
     <section id="home" ref={root} className="scroll-mt-24 px-3 pb-6 pt-20 sm:px-5 sm:pt-24">

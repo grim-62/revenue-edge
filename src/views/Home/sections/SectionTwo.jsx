@@ -1,11 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { deferGsap } from "../../../deferGsap";
 
-gsap.registerPlugin(ScrollTrigger);
-
-/* Needs this as the first line of src/index.css:
-   @import url("https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&display=swap"); */
 const HEADING_FONT = '"Archivo", ui-sans-serif, system-ui, sans-serif';
 
 const C = {
@@ -28,9 +23,9 @@ const STATEMENT = [
 /* Photos: save them in  public/who/  as  growing.jpg, investors.jpg, corporate.jpg
    (or pass your own paths with the `images` prop). A sketch shows if a photo is missing. */
 const DEFAULT_IMAGES = {
-  growing: "https://i.pinimg.com/736x/26/d6/ef/26d6efede6e21522e070b822f88dfaa2.jpg",
-  investors: "https://i.pinimg.com/736x/15/0b/14/150b142a43c82ef9fe5d49dc29ecee92.jpg",
-  corporate: "https://i.pinimg.com/736x/58/96/0d/58960d372e2ff5087d6daff317c3080b.jpg",
+  growing: "https://i.pinimg.com/474x/26/d6/ef/26d6efede6e21522e070b822f88dfaa2.jpg",
+  investors: "https://i.pinimg.com/474x/15/0b/14/150b142a43c82ef9fe5d49dc29ecee92.jpg",
+  corporate: "https://i.pinimg.com/474x/58/96/0d/58960d372e2ff5087d6daff317c3080b.jpg",
 };
 
 const AUDIENCES = [
@@ -126,7 +121,6 @@ const Word = ({ children }) => (
   </span>
 );
 
-/* ───────── Pen sketches with a soft-blue accent (like Pal's yellow) ───────── */
 const P = (props) => (
   <path pathLength="1" strokeDasharray="1" className="draw" {...props} />
 );
@@ -219,6 +213,7 @@ function PhotoCard({ item, src, className = "" }) {
         <img
           src={src}
           alt={item.tag}
+          loading="lazy"
           draggable={false}
           onError={() => setFailed(true)}
           className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
@@ -272,7 +267,7 @@ function TextBlock({ item }) {
 export default function SectionTwo({ images = DEFAULT_IMAGES }) {
   const root = useRef(null);
 
-  useEffect(() => {
+  useEffect(() => deferGsap((gsap) => {
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: no-preference)", () => {
@@ -328,7 +323,7 @@ export default function SectionTwo({ images = DEFAULT_IMAGES }) {
       });
     }, root);
     return () => ctx.revert();
-  }, []);
+  }), []);
 
   return (
     <section id="who-we-work-with" ref={root} className="px-3 py-6 sm:px-5">
@@ -349,7 +344,6 @@ export default function SectionTwo({ images = DEFAULT_IMAGES }) {
             </span>
 
             <p
-              aria-label="Clear numbers. Faster growth. Real partnership. Strategy."
               style={{ fontFamily: HEADING_FONT }}
               className="mt-6 max-w-4xl text-[clamp(1.5rem,3.8vw,3.25rem)] font-bold uppercase leading-[1.18] tracking-[-0.025em] text-white sm:mt-7"
             >

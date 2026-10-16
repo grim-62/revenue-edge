@@ -101,7 +101,7 @@ const CategoryRow = memo(function CategoryRow({ cat, index, uid, isOpen, img, on
         id={panelId}
         role="region"
         aria-labelledby={btnId}
-        inert={!isOpen ? "" : undefined}
+        inert={!isOpen}
         className={`grid transition-[grid-template-rows] duration-500 ease-out ${
           isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
         }`}

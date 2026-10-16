@@ -1,11 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { deferGsap } from "../../../deferGsap";
 
-gsap.registerPlugin(ScrollTrigger);
-
-/* Needs this as the first line of src/index.css:
-   @import url("https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&display=swap"); */
 const HEADING_FONT = '"Archivo", ui-sans-serif, system-ui, sans-serif';
 
 const C = {
@@ -48,7 +43,7 @@ export default function SectionSeven({ endpoint, onSubmit }) {
   const root = useRef(null);
   const [status, setStatus] = useState("idle"); // idle | sending | sent | error
 
-  useEffect(() => {
+  useEffect(() => deferGsap((gsap) => {
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: no-preference)", () => {
@@ -63,7 +58,7 @@ export default function SectionSeven({ endpoint, onSubmit }) {
       });
     }, root);
     return () => ctx.revert();
-  }, []);
+  }), []);
 
   async function handleSubmit(e) {
     e.preventDefault();

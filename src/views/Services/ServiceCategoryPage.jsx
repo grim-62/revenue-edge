@@ -133,7 +133,7 @@ function Faq({ item, id, open, onToggle }) {
         id={`${id}-panel`}
         role="region"
         aria-labelledby={`${id}-btn`}
-        inert={!open ? "" : undefined}
+        inert={!open}
         className={`grid transition-[grid-template-rows] duration-300 ease-out ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
       >
         <div className="overflow-hidden">

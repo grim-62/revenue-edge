@@ -1,5 +1,7 @@
-import { useState } from "react";
-import { Shader, MeshGradient } from "shaders/react";
+import { lazy, Suspense, useEffect, useState } from "react";
+
+const Shader = lazy(() => import("shaders/react").then(({ Shader }) => ({ default: Shader })));
+const MeshGradient = lazy(() => import("shaders/react").then(({ MeshGradient }) => ({ default: MeshGradient })));
 
 /* Your exact MeshGradient from shaders.com (same stops + settings as the editor). */
 const STOPS = [
@@ -25,28 +27,44 @@ const prefersReducedMotion = () =>
  */
 export default function ShaderBackground({ speed = 6.9 }) {
   const [unavailable, setUnavailable] = useState(false);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    let timer;
+    const activate = () => {
+      timer = window.setTimeout(() => setReady(true), 1200);
+    };
+
+    window.addEventListener("scroll", activate, { once: true, passive: true });
+    return () => {
+      window.removeEventListener("scroll", activate);
+      window.clearTimeout(timer);
+    };
+  }, []);
 
   return (
     <div
       aria-hidden="true"
       className="pointer-events-none fixed inset-0 z-0"
-      style={{ background: unavailable ? FALLBACK : "#DCE7FB" }}
+      style={{ background: FALLBACK }}
     >
-      {!unavailable && (
-        <Shader className="h-full w-full" onUnavailable={() => setUnavailable(true)}>
-          <MeshGradient
-            stops={STOPS}
-            colorSpace="oklab"
-            count={5}
-            smoothness={2}
-            variation={0.35}
-            swirl={0.3}
-            drift={0.5}
-            wrapping={0}
-            seed={0}
-            speed={prefersReducedMotion() ? 0 : speed}
-          />
-        </Shader>
+      {ready && !unavailable && (
+        <Suspense fallback={null}>
+          <Shader className="h-full w-full" onUnavailable={() => setUnavailable(true)}>
+            <MeshGradient
+              stops={STOPS}
+              colorSpace="oklab"
+              count={5}
+              smoothness={2}
+              variation={0.35}
+              swirl={0.3}
+              drift={0.5}
+              wrapping={0}
+              seed={0}
+              speed={prefersReducedMotion() ? 0 : speed}
+            />
+          </Shader>
+        </Suspense>
       )}
     </div>
   );

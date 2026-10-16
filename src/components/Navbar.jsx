@@ -137,10 +137,12 @@ function MobileServices({ open, onNavigate, pathname }) {
     }
   }
 
+  if (!open) return null;
+
   return (
     <div
       id="mobile-services"
-      inert={!open ? "" : undefined}
+      inert={!open}
       className={`grid transition-[grid-template-rows] duration-300 ease-out ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
     >
       <div className="overflow-hidden">
@@ -174,13 +176,13 @@ function MobileServices({ open, onNavigate, pathname }) {
                     aria-controls={`mobile-cat-${cat.slug}`}
                     className="grid h-9 w-9 place-items-center rounded-full text-slate-500 outline-none hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-[#0B3D91]"
                   >
-                    <ChevronIcon className={`transition-transform duration-200 border rounded-full ${isOpen ? "rotate-180" : ""}`} />
+                    <ChevronIcon className={`transition-transform duration-200 border border-slate-500 text-slate-500 rounded-full ${isOpen ? "rotate-180" : ""}`} />
                   </button>
                 </div>
 
                 <div
                   id={`mobile-cat-${cat.slug}`}
-                  inert={!isOpen ? "" : undefined}
+                  inert={!isOpen}
                   className={`grid transition-[grid-template-rows] duration-300 ease-out ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
                 >
                   <div className="overflow-hidden">
@@ -296,7 +298,9 @@ export default function Navbar() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 px-3 pt-3 sm:px-5">
+    <>
+    <div aria-hidden="true" className="h-[4.75rem] md:h-[5.25rem]" />
+    <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:left-5 focus:top-5 focus:z-50 focus:rounded-full focus:bg-[#001022] focus:px-5 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-white"
@@ -318,7 +322,7 @@ export default function Navbar() {
             className="flex shrink-0 items-center rounded-lg px-1 outline-none focus-visible:ring-2 focus-visible:ring-[#0B3D91]"
             onClick={go}
           >
-            <img src="/reta.png" alt="Revenue Edge" width="172" height="50" decoding="async" className="h-9 w-auto sm:h-10 md:h-11" />
+            <img src="/reta.webp" alt="Revenue Edge" width="306" height="90" decoding="async" className="h-9 w-auto sm:h-10 md:h-11" />
           </Link>
 
           {/* Desktop links */}
@@ -370,12 +374,12 @@ export default function Navbar() {
                     {/* Dropdown: full width of the bar */}
                     <div
                       id="services-menu"
-                      inert={!servicesOpen ? "" : undefined}
+                      inert={!servicesOpen}
                       className={`absolute left-0 top-full z-40 w-full pt-3 transition-[opacity,transform] duration-200 motion-reduce:transition-none ${
                         servicesOpen ? "visible translate-y-0 opacity-100" : "invisible -translate-y-2 opacity-0"
                       }`}
                     >
-                      <ServicesMenu pathname={location.pathname} onNavigate={go} />
+                      {servicesOpen && <ServicesMenu pathname={location.pathname} onNavigate={go} />}
                     </div>
                   </div>
                 );
@@ -429,7 +433,7 @@ export default function Navbar() {
         {/* Mobile panel (scrolls on short screens) */}
         <div
           id="mobile-navigation"
-          inert={!menuOpen ? "" : undefined}
+          inert={!menuOpen}
           className={`absolute inset-x-0 top-[calc(100%+0.5rem)] max-h-[calc(100dvh-6.5rem)] origin-top overflow-y-auto overscroll-contain rounded-2xl border border-white/70 bg-white/95 p-3 shadow-[0_24px_60px_-24px_rgba(0,16,34,0.4)] backdrop-blur-xl transition-all duration-200 md:hidden ${
             menuOpen ? "visible translate-y-0 opacity-100" : "invisible -translate-y-2 opacity-0"
           }`}
@@ -496,5 +500,6 @@ export default function Navbar() {
         </div>
       </div>
     </header>
+    </>
   );
 }

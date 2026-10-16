@@ -1,9 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
+import { deferGsap } from "../deferGsap";
 
 /* Needs this as the first line of src/index.css:
    @import url("https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&display=swap"); */
@@ -124,7 +121,7 @@ export default function Footer({
   const root = useRef(null);
   const hasContact = contact.phone || contact.email || contact.address;
 
-  useEffect(() => {
+  useEffect(() => deferGsap((gsap, ScrollTrigger) => {
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: no-preference)", () => {
@@ -163,7 +160,7 @@ export default function Footer({
     ScrollTrigger.refresh();
 
     return () => ctx.revert();
-  }, []);
+  }), []);
 
   return (
     <footer ref={root} className="px-3 pb-3 pt-10 sm:px-5">
@@ -210,7 +207,10 @@ export default function Footer({
             <div className="ft-brand max-w-xs">
               <div className="mix-blend-screen">
                 <img
-                  src="/reta.png"
+                  src="/reta.webp"
+                  width="306"
+                  height="90"
+                  loading="lazy"
                   className="h-15 w-auto brightness-0 invert"
                   alt="Reta"
                 />

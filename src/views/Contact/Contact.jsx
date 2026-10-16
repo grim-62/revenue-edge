@@ -11,7 +11,9 @@ export default function ContactPage() {
           </p>
           <h1
             className="mt-4 max-w-4xl text-[clamp(3rem,8vw,6.5rem)] font-black uppercase leading-[0.9] tracking-[-0.055em] text-[#001022]"
-            style={{ fontFamily: '"Archivo", ui-sans-serif, system-ui, sans-serif' }}
+            style={{
+              fontFamily: '"Archivo", ui-sans-serif, system-ui, sans-serif',
+            }}
           >
             Let’s chat.
           </h1>
@@ -34,7 +36,9 @@ export default function ContactPage() {
               </p>
               <h2
                 className="mt-3 text-[clamp(2rem,5vw,3.5rem)] font-black uppercase leading-none tracking-[-0.04em] text-[#001022]"
-                style={{ fontFamily: '"Archivo", ui-sans-serif, system-ui, sans-serif' }}
+                style={{
+                  fontFamily: '"Archivo", ui-sans-serif, system-ui, sans-serif',
+                }}
               >
                 Where to find us
               </h2>
@@ -52,7 +56,9 @@ export default function ContactPage() {
               </span>
               <h3
                 className="mt-6 max-w-sm text-3xl font-black uppercase leading-[1.02] tracking-[-0.04em] text-[#001022]"
-                style={{ fontFamily: '"Archivo", ui-sans-serif, system-ui, sans-serif' }}
+                style={{
+                  fontFamily: '"Archivo", ui-sans-serif, system-ui, sans-serif',
+                }}
               >
                 Let’s make the numbers clearer.
               </h3>
@@ -70,7 +76,10 @@ export default function ContactPage() {
                   <div>
                     <dt className="font-semibold text-slate-500">Call</dt>
                     <dd className="mt-1">
-                      <a className="font-semibold text-[#001022] underline decoration-[#0B3D91]/40 underline-offset-4" href="tel:+61200000000">
+                      <a
+                        className="font-semibold text-[#001022] underline decoration-[#0B3D91]/40 underline-offset-4"
+                        href="tel:+61200000000"
+                      >
                         +61 2 0000 0000
                       </a>
                     </dd>
@@ -78,7 +87,10 @@ export default function ContactPage() {
                   <div>
                     <dt className="font-semibold text-slate-500">Email</dt>
                     <dd className="mt-1">
-                      <a className="font-semibold text-[#001022] underline decoration-[#0B3D91]/40 underline-offset-4" href="mailto:hello@revenueedge.example">
+                      <a
+                        className="font-semibold text-[#001022] underline decoration-[#0B3D91]/40 underline-offset-4"
+                        href="mailto:hello@revenueedge.example"
+                      >
                         hello@revenueedge.example
                       </a>
                     </dd>
@@ -94,28 +106,16 @@ export default function ContactPage() {
             </div>
 
             <div className="relative min-h-[20rem] overflow-hidden bg-[#D9F0F5] md:min-h-[31rem]">
-              <svg
-                viewBox="0 0 720 520"
-                preserveAspectRatio="xMidYMid slice"
-                className="absolute inset-0 h-full w-full"
-                role="img"
-                aria-label="Illustrative map graphic for a sample Sydney office location"
-              >
-                <rect width="720" height="520" fill="#D9F0F5" />
-                <path d="M0 88 720 442M0 350 720 110M95 0l310 520M545 0 245 520M0 230h720M360 0v520" stroke="#FFFFFF" strokeWidth="18" />
-                <path d="M0 88 720 442M0 350 720 110M95 0l310 520M545 0 245 520M0 230h720M360 0v520" stroke="#B7CFD6" strokeWidth="2" />
-                <path d="M0 468c170-80 263-66 361-4s221 61 359-18" fill="none" stroke="#A6DDE7" strokeWidth="32" />
-                <path d="M44 140h95v62H44zm436 185h108v76H480zM214 24h76v60h-76zM601 120h74v62h-74z" fill="#C5E2C9" />
-                <path d="M152 0v520M0 294h720M433 0v520M0 400h720" stroke="#FFFFFF" strokeWidth="5" strokeDasharray="12 10" />
-                <circle cx="376" cy="257" r="42" fill="#0B3D91" fillOpacity=".12" />
-                <path d="M376 199c-25 0-45 20-45 45 0 34 45 82 45 82s45-48 45-82c0-25-20-45-45-45Z" fill="#001022" />
-                <circle cx="376" cy="244" r="14" fill="#FFFFFF" />
-                <text x="30" y="42" fill="#001022" fontFamily="sans-serif" fontSize="16" fontWeight="700">SYDNEY · SAMPLE MAP</text>
-              </svg>
-              <div className="absolute bottom-5 left-5 rounded-2xl border border-white/70 bg-white/90 px-5 py-4 shadow-lg backdrop-blur">
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#0B3D91]">Example location</p>
-                <p className="mt-1 font-bold text-[#001022]">Melbourne Victoria, Australia</p>
-              </div>
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.6983291685!2d144.68053897669978!3d-37.82053447197394!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad68ebb238a3783%3A0x291e87b4418fb671!2s28%20Burgess%20Rd%2C%20Tarneit%20VIC%203029%2C%20Australia!5e0!3m2!1sen!2sin!4v1792167470595!5m2!1sen!2sin"
+                title="Google Maps location - 28 Burgess Road, Tarneit VIC 3029, Australia"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="strict-origin-when-cross-origin"
+              />
             </div>
           </div>
         </div>
@@ -129,7 +129,9 @@ export default function ContactPage() {
             </p>
             <h2
               className="mt-3 text-[clamp(2rem,5vw,3.5rem)] font-black uppercase leading-none tracking-[-0.04em] text-[#001022]"
-              style={{ fontFamily: '"Archivo", ui-sans-serif, system-ui, sans-serif' }}
+              style={{
+                fontFamily: '"Archivo", ui-sans-serif, system-ui, sans-serif',
+              }}
             >
               What happens when you get in touch?
             </h2>
@@ -181,7 +183,9 @@ export default function ContactPage() {
               </p>
               <h2
                 className="mt-3 text-[clamp(2rem,5vw,3.5rem)] font-black uppercase leading-none tracking-[-0.04em]"
-                style={{ fontFamily: '"Archivo", ui-sans-serif, system-ui, sans-serif' }}
+                style={{
+                  fontFamily: '"Archivo", ui-sans-serif, system-ui, sans-serif',
+                }}
               >
                 Explore how we can help.
               </h2>
