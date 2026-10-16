@@ -3,7 +3,7 @@ import Navbar from "../components/Navbar";
 
 const RootLayout = ({ children }) => {
   return (
-    <div className="min-h-screen bg-[#FAFBFC]">
+    <div className="min-h-screen overflow-x-hidden bg-[#FAFBFC]">
       <Navbar />
       <main id="main-content">{children}</main>
       <Footer />
