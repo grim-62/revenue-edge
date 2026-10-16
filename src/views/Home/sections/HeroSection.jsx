@@ -25,8 +25,8 @@ const DEFAULT_IMAGES = {
 
 /* Headline lines. "@name" = photo sitting between the words. */
 const LINES = [
-  { tokens: ["FINANCIAL", "@buildings", "CLARITY"], color: C.primary },
-  { tokens: ["TO", "ACCELERATE", "@suit"], color: C.primary },
+  { tokens: ["FINANCIAL", "CLARITY", "@buildings",], color: C.primary },
+  { tokens: ["TO","@suit", "ACCELERATE"], color: C.primary },
   { tokens: ["YOUR", "GROWTH"], color: C.primaryHover },
 ];
 
@@ -166,7 +166,7 @@ export default function HeroSection({
   return (
     <section id="home" ref={root} className="scroll-mt-24 px-3 pb-6 pt-20 sm:px-5 sm:pt-24">
       <div
-        className="mx-auto max-w-[1400px] rounded-[2rem] px-5 py-12 sm:rounded-[2.5rem] sm:px-10 sm:py-16 md:py-24 lg:py-10"
+        className="mx-auto max-w-350 rounded-4xl px-5 sm:py-12 sm:rounded-[2.5rem] sm:px-10  md:py-24 lg:py-10"
       >
         <div className="mx-auto flex max-w-5xl flex-col items-center text-center lg:max-w-7xl">
           {/* badge */}
@@ -182,7 +182,7 @@ export default function HeroSection({
           <h1
             aria-label="Financial clarity to accelerate your growth"
             style={{ fontFamily: HEADING_FONT }}
-            className="mt-7 text-[clamp(2.5rem,6.4vw,5.9rem)] font-black uppercase leading-[1.05] tracking-[-0.035em] lg:max-w-6xl lg:text-[clamp(3.5rem,5vw,5.25rem)]"
+            className="mt-5 text-[clamp(3rem,6.4vw,5.9rem)]  font-black uppercase leading-[1.05] tracking-[-0.035em] lg:max-w-6xl lg:text-[clamp(3.5rem,5vw,5.25rem)]"
           >
             <span aria-hidden="true">
               {LINES.map((l, i) => (

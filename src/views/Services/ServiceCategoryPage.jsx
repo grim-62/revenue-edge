@@ -58,7 +58,7 @@ function PillLink({ to, children, className = "" }) {
     <Link
       to={to}
       className={`group inline-flex items-center gap-4 rounded-full py-1.5 pl-7 pr-1.5 text-[15px] font-semibold text-white outline-none transition-colors duration-300 hover:bg-[#0B3D91] focus-visible:ring-2 focus-visible:ring-[#0B3D91] focus-visible:ring-offset-2 ${className}`}
-      style={{ backgroundColor: C.white }}
+      style={{ backgroundColor: C.primary }}
     >
       {children}
       <span className="grid h-10 w-10 place-items-center rounded-full" style={{ backgroundColor: C.primaryLight, color: C.primary }}>
@@ -176,7 +176,6 @@ export default function ServiceCategoryPage({ categorySlug: propCat, contactHref
     setPrevSlug(categorySlug);
     setOpenFaq(0);
   }
-  console.log("ServiceCategoryPage: categorySlug", categorySlug, "category", category);
 
   useEffect(() => {
     if (!category) return undefined;
@@ -399,7 +398,7 @@ export default function ServiceCategoryPage({ categorySlug: propCat, contactHref
             src={images?.partner ?? category.partnerImage}
             alt={`${category.name} with Revenue Edge`}
             label="Wide image, 16:7 (e.g. 1600×700)"
-            className="sc-reveal mb-6 aspect-[16/9] w-full rounded-[1.75rem] sm:aspect-[16/7]"
+            className="sc-reveal mb-6 w-full rounded-[1.75rem]"
           />
 
           <div className="sc-reveal rounded-[1.75rem] border p-8 sm:p-12" style={{ backgroundColor: C.tint, borderColor: C.border }}>
@@ -459,28 +458,28 @@ export default function ServiceCategoryPage({ categorySlug: propCat, contactHref
                   <Link
                     key={c.slug}
                     to={c.href}
-                    className="sc-other group flex min-h-64 flex-col rounded-[1.75rem] p-8 outline-none transition-[transform,background-color] duration-300 hover:-translate-y-1.5 hover:bg-[#001022] focus-visible:ring-2 focus-visible:ring-[#0B3D91] sm:p-10"
+                    className="sc-other group flex min-h-64 flex-col rounded-[1.75rem] p-8 outline-none transition-[transform,background-color] ease-in-out duration-300 hover:-translate-y-1.5 hover:bg-[#001022] focus-visible:ring-2 focus-visible:ring-[#0B3D91] sm:p-10"
                     style={{ backgroundColor: C.primaryLight }}
                   >
                     <span className="flex items-center justify-between gap-3">
-                      <span className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#0B3D91] transition-colors duration-300 group-hover:bg-white/10 group-hover:text-white">
+                      <span className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#0B3D91] transition-colors duration-300 group-hover:bg-white/10 ">
                         {label ? `${label} · ` : ""}{c.items?.length ?? 0} services
                       </span>
                     </span>
                     <h3
                       style={{ fontFamily: HEADING_FONT }}
-                      className="mt-6 text-[clamp(1.5rem,2.6vw,2.2rem)] font-black uppercase leading-[1.05] tracking-[-0.03em] text-[#001022] transition-colors duration-300 group-hover:text-white"
+                      className="mt-6 text-[clamp(1.5rem,2.6vw,2.2rem)] font-black uppercase leading-[1.05] tracking-[-0.03em] text-[#001022] transition-colors duration-300 "
                     >
                       {c.name}
                     </h3>
                     {(c.description ?? c.eyebrow) && (
-                      <p className="mt-3 line-clamp-2 flex-1 text-[15px] leading-relaxed text-[#475569] transition-colors duration-300 group-hover:text-white/70">
+                      <p className="mt-3 line-clamp-2 flex-1 text-[15px] leading-relaxed text-[#475569] transition-colors duration-300 ">
                         {c.description ?? c.eyebrow}
                       </p>
                     )}
-                    <span className="mt-6 inline-flex items-center gap-3 text-sm font-semibold text-[#001022] transition-colors duration-300 group-hover:text-white">
+                    <span className="mt-6 inline-flex items-center gap-3 text-sm font-semibold text-[#001022] transition-colors duration-300 ">
                       Explore {c.name}
-                      <span className="grid h-10 w-10 place-items-center rounded-full bg-[#001022] text-white transition-colors duration-300 group-hover:bg-white group-hover:text-[#001022]">
+                      <span className="grid h-10 w-10 place-items-center rounded-full bg-[#001022] text-white transition-colors duration-300 group-hover:text-white group-hover:text-[#001022]">
                         <Arrow className="-rotate-45 transition-transform duration-300 group-hover:rotate-0" />
                       </span>
                     </span>

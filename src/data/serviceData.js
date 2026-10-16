@@ -147,7 +147,7 @@ const categoryDefinitions = [
     art: "calc",
     tag: "Lodged on time",
     heroImage: "/img4.jpg",
-    partnerImage: "/img10.jpg",
+    partnerImage: "/img6.jpg",
     eyebrow: "Tax strategy and compliance",
     description:
       "Practical tax advice for individuals and businesses, from accurate returns to long-range planning that keeps more of your money working for you.",
