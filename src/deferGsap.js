@@ -24,9 +24,22 @@ export function deferGsap(setup) {
     cleanup = setup(gsap, ScrollTrigger);
   };
 
+  const scheduleActivate = () => {
+    if (typeof window === "undefined") return;
+    if (started || cancelled) return;
+
+    const run = () => {
+      window.requestAnimationFrame(() => activate());
+    };
+
+    window.setTimeout(run, 120);
+  };
+
   events.forEach((event) => {
     window.addEventListener(event, activate, { passive: event === "wheel" || event === "touchstart" });
   });
+
+  scheduleActivate();
 
   return () => {
     cancelled = true;

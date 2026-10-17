@@ -1,10 +1,55 @@
+import { useEffect, useRef } from "react";
 import SectionSeven from "../Home/sections/SectionSeven";
 import { Link } from "react-router-dom";
+import { deferGsap } from "../../deferGsap";
 
 export default function ContactPage() {
+  const root = useRef(null);
+
+  useEffect(() => deferGsap((gsap, ScrollTrigger) => {
+    const context = gsap.context(() => {
+      const motion = gsap.matchMedia();
+      motion.add("(prefers-reduced-motion: no-preference)", () => {
+        gsap.from(".contact-intro > *", {
+          y: 24,
+          opacity: 0,
+          duration: 0.7,
+          stagger: 0.1,
+          ease: "power3.out",
+        });
+        gsap.from(".contact-location", {
+          y: 36,
+          opacity: 0,
+          duration: 0.8,
+          ease: "power3.out",
+          scrollTrigger: { trigger: ".contact-location", start: "top 82%", once: true },
+        });
+        gsap.from(".contact-steps article", {
+          y: 28,
+          opacity: 0,
+          duration: 0.7,
+          stagger: 0.13,
+          ease: "power3.out",
+          scrollTrigger: { trigger: ".contact-steps", start: "top 82%", once: true },
+        });
+        gsap.from(".contact-closing > *", {
+          y: 24,
+          opacity: 0,
+          duration: 0.7,
+          stagger: 0.1,
+          ease: "power3.out",
+          scrollTrigger: { trigger: ".contact-closing", start: "top 85%", once: true },
+        });
+      });
+    }, root);
+
+    ScrollTrigger.refresh();
+    return () => context.revert();
+  }), []);
+
   return (
-    <>
-      <section className="px-4 pb-2 pt-14 sm:px-6 sm:pt-20">
+    <div ref={root}>
+      <section className="contact-intro px-4 pb-2 pt-14 sm:px-6 sm:pt-20">
         <div className="mx-auto max-w-6xl">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#0B3D91]">
             A good conversation starts here
@@ -49,7 +94,7 @@ export default function ContactPage() {
             </p>
           </div>
 
-          <div className="grid overflow-hidden rounded-[2rem] border border-[#DCE5F0] bg-white shadow-[0_24px_70px_-42px_rgba(0,16,34,0.4)] md:grid-cols-[0.85fr_1.15fr]">
+          <div className="contact-location grid overflow-hidden rounded-[2rem] border border-[#DCE5F0] bg-white shadow-[0_24px_70px_-42px_rgba(0,16,34,0.4)] md:grid-cols-[0.85fr_1.15fr]">
             <div className="relative z-10 m-4 rounded-[1.5rem] bg-[#E8F0FF] p-6 sm:m-6 sm:p-8">
               <span className="inline-flex rounded-full bg-white px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.12em] text-[#0B3D91]">
                 Sample details — replace before launch
@@ -137,7 +182,7 @@ export default function ContactPage() {
             </h2>
           </div>
 
-          <div className="mt-9 grid gap-4 md:grid-cols-3">
+          <div className="contact-steps mt-9 grid gap-4 md:grid-cols-3">
             {[
               {
                 number: "01",
@@ -174,7 +219,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <section className="px-4 pb-16 pt-8 sm:px-6 md:pb-24">
+      <section className="contact-closing px-4 pb-16 pt-8 sm:px-6 md:pb-24">
         <div className="mx-auto max-w-6xl rounded-[2rem] bg-[#001022] px-6 py-10 text-white sm:px-10 sm:py-14">
           <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
             <div className="max-w-2xl">
@@ -204,6 +249,6 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }
