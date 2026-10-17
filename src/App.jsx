@@ -10,6 +10,7 @@ const NotFoundPage = lazy(() => import("./views/NotFound"));
 const ServiceDetailPage = lazy(() => import("./views/Services/ServiceDetailPage"));
 const ServicesPage = lazy(() => import("./views/Services/ServicesPage"));
 const ServiceCategoryPage = lazy(() => import("./views/Services/ServiceCategoryPage"));
+const CareerPage = lazy(() => import("./views/Career/Careerspage"));
 
 function ServiceDetailRoute() {
   const { categorySlug, serviceSlug } = useParams();
@@ -70,6 +71,7 @@ const App = () => {
             <Route path="/service/:categorySlug/:serviceSlug" element={<Suspense fallback={null}><ServiceDetailRoute /></Suspense>} />
             <Route path="/about" element={<Suspense fallback={null}><AboutPage /></Suspense>} />
             <Route path="/contact" element={<Suspense fallback={null}><ContactPage /></Suspense>} />
+            <Route path="/careers" element={<Suspense fallback={null}><CareerPage /></Suspense>} />
           </Route>
           <Route path="*" element={<Suspense fallback={null}><NotFoundPage /></Suspense>} />
         </Routes>

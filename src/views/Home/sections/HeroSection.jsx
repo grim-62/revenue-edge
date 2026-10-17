@@ -17,8 +17,8 @@ const C = {
 /* Photos used in the headline. Save them in  public/hero/  (or pass your own paths
    with the `images` prop). If a file is missing, a pen sketch is shown instead. */
 const DEFAULT_IMAGES = {
-  buildings: "https://i.pinimg.com/236x/0f/55/7b/0f557b38ca48f71fc58d4af2cceeedeb.jpg",
-  suit: "https://i.pinimg.com/236x/5b/cd/01/5bcd0112eaf556e1f57c05841cb1bc6b.jpg",
+  buildings: "./hero2.jpg",
+  suit: "./hero1.png",
 };
 
 /* Headline lines. "@name" = photo sitting between the words. */

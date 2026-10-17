@@ -13,9 +13,9 @@ const COLORS = {
 
 const DEFAULT_IMAGES = {
   hero: "https://i.pinimg.com/736x/58/96/0d/58960d372e2ff5087d6daff317c3080b.jpg",
-  people: "https://i.pinimg.com/736x/26/d6/ef/26d6efede6e21522e070b822f88dfaa2.jpg",
-  together: "https://i.pinimg.com/736x/58/96/0d/58960d372e2ff5087d6daff317c3080b.jpg",
-  adapt: "https://i.pinimg.com/736x/15/0b/14/150b142a43c82ef9fe5d49dc29ecee92.jpg",
+  people: "https://i.pinimg.com/1200x/fd/21/7e/fd217eaad772a8bf0a26eeddd899198e.jpg",
+  together: "https://i.pinimg.com/736x/4c/34/a2/4c34a29c8b556ea64e06b7c12ee4c0b2.jpg",
+  adapt: "https://i.pinimg.com/1200x/33/b3/67/33b36737fc79bfafaa8b79b1b884bbaf.jpg",
 };
 
 const STORY = [

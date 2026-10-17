@@ -5,6 +5,7 @@ import { serviceCategories } from "../data/serviceData";
 const NAVIGATION = [
   { label: "Our Services", href: "/services" },
   { label: "About Us", href: "/about" },
+  { label: "Join Us", href: "/careers" },
   { label: "Contact", href: "/contact" },
 ];
 

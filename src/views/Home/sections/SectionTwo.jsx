@@ -23,9 +23,9 @@ const STATEMENT = [
 /* Photos: save them in  public/who/  as  growing.jpg, investors.jpg, corporate.jpg
    (or pass your own paths with the `images` prop). A sketch shows if a photo is missing. */
 const DEFAULT_IMAGES = {
-  growing: "https://i.pinimg.com/474x/26/d6/ef/26d6efede6e21522e070b822f88dfaa2.jpg",
-  investors: "https://i.pinimg.com/474x/15/0b/14/150b142a43c82ef9fe5d49dc29ecee92.jpg",
-  corporate: "https://i.pinimg.com/474x/58/96/0d/58960d372e2ff5087d6daff317c3080b.jpg",
+  growing: "https://i.pinimg.com/1200x/16/02/5b/16025b2cd1421f917cff4f260e4ebf4b.jpg",
+  investors: "https://i.pinimg.com/736x/be/e7/28/bee7281cc637b48bdbef4f430d0b2108.jpg",
+  corporate: "https://i.pinimg.com/1200x/d6/1b/6c/d61b6c41d2e1285ab187f170ac7dbda4.jpg",
 };
 
 const AUDIENCES = [
@@ -54,6 +54,9 @@ const AUDIENCES = [
     focus: ["Corporate Governance", "Valuations & Audits", "Inter-Entity Tax"],
   },
 ];
+
+const WHO_INTRO =
+  "Different stages of wealth demand different fiscal instruments. We tailor our engagement model to your operational footprint.";
 
 /* ───────── Icons ───────── */
 const ico = {
@@ -115,11 +118,27 @@ function Sticker({ name }) {
   );
 }
 
-const Word = ({ children }) => (
+/* Each word sits in a mask so it can slide up into view */
+const Word = ({ children, cls = "st-word" }) => (
   <span className="inline-block overflow-hidden py-[0.05em] align-bottom">
-    <span className="st-word inline-block will-change-transform">{children}</span>
+    <span className={`${cls} inline-block will-change-transform`}>{children}</span>
   </span>
 );
+
+const Words = ({ text = "", cls = "wy-word" }) =>
+  text.split(" ").map((w, i) => (
+    <span key={`${w}-${i}`}>
+      <Word cls={cls}>{w}</Word>{" "}
+    </span>
+  ));
+
+/* Words that light up one by one as you scroll */
+const ScrubWords = ({ text = "" }) =>
+  text.split(" ").map((w, i) => (
+    <span key={`${w}-${i}`}>
+      <span className="wy-scrub">{w}</span>{" "}
+    </span>
+  ));
 
 const P = (props) => (
   <path pathLength="1" strokeDasharray="1" className="draw" {...props} />
@@ -200,13 +219,13 @@ const CalcArt = () => (
 
 const ART = { chart: ChartArt, coins: CoinsArt, calc: CalcArt };
 
-/* ───────── Pal-style rows: photo card + sketch/quote block ───────── */
+/* ───────── Rows: photo card + sketch/quote block ───────── */
 function PhotoCard({ item, src, className = "" }) {
   const [failed, setFailed] = useState(false);
   const Art = ART[item.art];
   return (
     <div
-      className={`wy-photo group relative aspect-[1.17/1] w-full overflow-hidden rounded-[1.5rem] ${className}`}
+      className={`wy-photo relative aspect-[1.17/1] w-full overflow-hidden rounded-[1.5rem] ${className}`}
       style={{ backgroundColor: C.primaryLight }}
     >
       {src && !failed ? (
@@ -216,7 +235,7 @@ function PhotoCard({ item, src, className = "" }) {
           loading="lazy"
           draggable={false}
           onError={() => setFailed(true)}
-          className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          className="h-full w-full object-cover will-change-transform"
         />
       ) : (
         <div className="grid h-full w-full place-items-center p-12 sm:p-16">
@@ -226,7 +245,7 @@ function PhotoCard({ item, src, className = "" }) {
         </div>
       )}
       <span
-        className="absolute left-5 top-5 rounded-full bg-white px-5 py-2 text-[15px] font-semibold shadow-[0_6px_20px_-8px_rgba(0,16,34,0.35)]"
+        className="wy-tag absolute left-5 top-5 rounded-full bg-white px-5 py-2 text-[15px] font-semibold shadow-[0_6px_20px_-8px_rgba(0,16,34,0.35)]"
         style={{ color: C.primary }}
       >
         {item.tag}
@@ -267,66 +286,113 @@ function TextBlock({ item }) {
 export default function SectionTwo({ images = DEFAULT_IMAGES }) {
   const root = useRef(null);
 
-  useEffect(() => deferGsap((gsap) => {
-    const ctx = gsap.context(() => {
-      const mm = gsap.matchMedia();
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
-        /* dark statement card */
-        gsap
-          .timeline({
-            defaults: { ease: "power4.out" },
-            scrollTrigger: { trigger: ".st-card", start: "top 75%" },
-          })
-          .from(".st-badge", { y: 16, opacity: 0, duration: 0.6 })
-          .from(".st-word", { yPercent: 115, duration: 1, stagger: 0.06 }, "-=0.3")
-          .from(".st-sticker", { scale: 0.5, rotate: -8, opacity: 0, duration: 0.8, ease: "back.out(1.8)", stagger: 0.2 }, "-=0.7")
-          .from(".st-sub", { y: 20, opacity: 0, duration: 0.7 }, "-=0.6");
+  useEffect(
+    () =>
+      deferGsap((gsap, ScrollTrigger) => {
+        const ctx = gsap.context(() => {
+          const mm = gsap.matchMedia();
 
-        gsap.to(".st-float", {
-          y: -4,
-          duration: 2.4,
-          ease: "sine.inOut",
-          yoyo: true,
-          repeat: -1,
-          stagger: { each: 0.35, from: "random" },
-        });
+          mm.add("(prefers-reduced-motion: no-preference)", () => {
+            const once = (trigger, start = "top 80%") => ({ trigger, start, once: true });
 
-        /* Who we work with */
-        gsap.from(".wy-line", {
-          scaleX: 0,
-          transformOrigin: "left center",
-          duration: 1.2,
-          ease: "power3.inOut",
-          scrollTrigger: { trigger: ".wy-line", start: "top 92%" },
-        });
+            /* 1. Statement card: card lifts, words rise, stickers pop, subline fades */
+            gsap
+              .timeline({
+                defaults: { ease: "power4.out" },
+                scrollTrigger: once(".st-card", "top 78%"),
+              })
+              .from(".st-card", { y: 40, opacity: 0, duration: 0.9, clearProps: "transform,opacity" })
+              .from(".st-badge", { y: 16, opacity: 0, duration: 0.6 }, "-=0.5")
+              .from(".st-word", { yPercent: 115, duration: 1, stagger: 0.06 }, "-=0.3")
+              .from(
+                ".st-sticker",
+                { scale: 0.5, rotate: -8, opacity: 0, duration: 0.8, ease: "back.out(1.8)", stagger: 0.2 },
+                "-=0.7"
+              )
+              .from(".st-sub", { y: 20, opacity: 0, duration: 0.7 }, "-=0.6");
 
-        gsap.from(".wy-head > *", {
-          y: 30,
-          opacity: 0,
-          duration: 0.8,
-          stagger: 0.12,
-          ease: "power3.out",
-          scrollTrigger: { trigger: ".wy-head", start: "top 85%" },
-        });
+            gsap.to(".st-float", {
+              y: -4,
+              duration: 2.4,
+              ease: "sine.inOut",
+              yoyo: true,
+              repeat: -1,
+              stagger: { each: 0.35, from: "random" },
+            });
 
-        gsap.utils.toArray(".wy-row").forEach((row) => {
-          gsap
-            .timeline({
-              defaults: { ease: "power3.out" },
-              scrollTrigger: { trigger: row, start: "top 80%" },
-            })
-            .from(row.querySelector(".wy-photo"), { y: 60, opacity: 0, scale: 0.95, duration: 1 })
-            .from(row.querySelectorAll(".wy-text > *"), { y: 30, opacity: 0, duration: 0.7, stagger: 0.1 }, "-=0.6")
-            .from(row.querySelectorAll(".wy-text .draw"), { strokeDashoffset: 1, duration: 1.2, ease: "power2.inOut", stagger: 0.015 }, "<")
-            .from(row.querySelectorAll(".wy-text .wy-accent"), { opacity: 0, duration: 0.6 }, "-=0.5");
-        });
-      });
-    }, root);
-    return () => ctx.revert();
-  }), []);
+            /* 2. Who we work with: rule draws across, title rises, intro lights up with scroll */
+            gsap.from(".wy-line", {
+              scaleX: 0,
+              transformOrigin: "left center",
+              duration: 1.4,
+              ease: "power3.inOut",
+              scrollTrigger: once(".wy-line", "top 92%"),
+            });
+
+            gsap.from(".wy-head .wy-word", {
+              yPercent: 115,
+              duration: 1,
+              stagger: 0.06,
+              ease: "power4.out",
+              scrollTrigger: once(".wy-head", "top 82%"),
+            });
+
+            const introWords = gsap.utils.toArray(".wy-head .wy-scrub");
+            gsap.set(introWords, { opacity: 0.2 });
+            gsap.to(introWords, {
+              opacity: 1,
+              ease: "none",
+              stagger: 0.12,
+              scrollTrigger: { trigger: ".wy-head p", start: "top 85%", end: "bottom 55%", scrub: true },
+            });
+
+            /* 3. Rows: photo wipes in from its own side, tag pops, text rises, sketch draws; photo drifts inside frame */
+            gsap.utils.toArray(".wy-row").forEach((row, i) => {
+              const photoOnRight = i % 2 === 1;
+              const photo = row.querySelector(".wy-photo");
+              const img = photo?.querySelector("img");
+              const tag = row.querySelector(".wy-tag");
+
+              gsap
+                .timeline({ defaults: { ease: "power3.out" }, scrollTrigger: once(row, "top 78%") })
+                .fromTo(
+                  photo,
+                  { clipPath: photoOnRight ? "inset(0% 0% 0% 100%)" : "inset(0% 100% 0% 0%)" },
+                  { clipPath: "inset(0% 0% 0% 0%)", duration: 1.2, ease: "power3.inOut", clearProps: "clipPath" }
+                )
+                .from(tag, { y: 14, scale: 0.85, opacity: 0, duration: 0.6, ease: "back.out(1.7)" }, "-=0.5")
+                .from(row.querySelectorAll(".wy-text > *"), { y: 30, opacity: 0, duration: 0.7, stagger: 0.1 }, "-=0.8")
+                .from(
+                  row.querySelectorAll(".wy-text .draw"),
+                  { strokeDashoffset: 1, duration: 1.2, ease: "power2.inOut", stagger: 0.015 },
+                  "<"
+                )
+                .from(row.querySelectorAll(".wy-text .wy-accent"), { opacity: 0, duration: 0.6 }, "-=0.5");
+
+              if (img) {
+                gsap.fromTo(
+                  img,
+                  { yPercent: -8, scale: 1.2 },
+                  {
+                    yPercent: 8,
+                    scale: 1.2,
+                    ease: "none",
+                    scrollTrigger: { trigger: row, start: "top bottom", end: "bottom top", scrub: true },
+                  }
+                );
+              }
+            });
+          });
+        }, root);
+
+        ScrollTrigger.refresh();
+        return () => ctx.revert();
+      }),
+    []
+  );
 
   return (
-    <section id="who-we-work-with" ref={root} className="px-3 py-6 sm:px-5">
+    <section id="who-we-work-with" ref={root} className="overflow-x-clip px-3 py-6 sm:px-5">
       <div className="mx-auto max-w-[1400px]">
         {/* Statement card */}
         <div
@@ -366,19 +432,22 @@ export default function SectionTwo({ images = DEFAULT_IMAGES }) {
           </div>
         </div>
 
-        {/* Who we work with (Pal-style zig-zag) */}
-        <div className="px-2 pb-10 pt-16 sm:px-6 md:pb-16 md:pt-15">
+        {/* Who we work with (zig-zag) */}
+        <div className="px-2 pb-10 pt-16 sm:px-6 md:pb-16 md:pt-16">
           <div className="wy-line h-px w-full" style={{ backgroundColor: C.primary }} />
 
           <div className="wy-head mx-auto mt-12 flex max-w-3xl flex-col items-center text-center md:mt-16">
             <h2
+              aria-label="Who We Work With"
               style={{ fontFamily: HEADING_FONT, color: C.primary }}
               className="text-[clamp(2.2rem,5.4vw,4.75rem)] font-black uppercase leading-[1] tracking-[-0.035em]"
             >
-              Who We Work With
+              <span aria-hidden="true">
+                <Words text="Who We Work With" cls="wy-word" />
+              </span>
             </h2>
             <p className="mt-5 max-w-xl text-base leading-relaxed" style={{ color: C.textSecondary }}>
-              Different stages of wealth demand different fiscal instruments. We tailor our engagement model to your operational footprint.
+              <ScrubWords text={WHO_INTRO} />
             </p>
           </div>
 
