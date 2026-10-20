@@ -17,6 +17,8 @@ const DEFAULT_LINKS = [
   { label: "Home", href: "/" },
   { label: "Services", href: "/services" },
   { label: "About", href: "/about" },
+  { label: "Reviews", href: "/review" },
+  { label: "Join Us", href: "/careers" },
   { label: "Contact", href: "/contact" },
 ];
 
