@@ -92,10 +92,10 @@ export default function SectionFive() {
           }}
         >
           <p
-            aria-label={PLAIN}
             style={{ fontFamily: HEADING_FONT }}
             className="mx-auto max-w-5xl text-[clamp(1.75rem,4.8vw,4.1rem)] font-black uppercase leading-[1.08] tracking-[-0.03em] text-white [text-wrap:balance]"
           >
+            <span className="sr-only">{PLAIN}</span>
             <span aria-hidden="true">
               {TEXT.map((t, i) => (
                 <span key={i}>

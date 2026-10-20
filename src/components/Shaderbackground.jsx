@@ -3,11 +3,11 @@ import { Shader, MeshGradient } from "shaders/react";
 
 /* Your exact MeshGradient from shaders.com (same stops + settings as the editor). */
 const STOPS = [
-  { color: "#F4F8FF", position: 0 },
-  { color: "#C9DAFF", position: 0.26 },
-  { color: "#A9C4FA", position: 0.52 },
-  { color: "#F4F8FF", position: 0.76 },
-  { color: "#FFF8F2", position: 1 },
+  { color: "#ECF2FD", position: 0 },
+  { color: "#B5CBF7", position: 0.26 },
+  { color: "#90B0F0", position: 0.52 },
+  { color: "#E6EEFC", position: 0.76 },
+  { color: "#F7EEE6", position: 1 },
 ];
 
 /* Shown only if the browser has no WebGPU */
@@ -51,3 +51,13 @@ export default function ShaderBackground({ speed = 6.9 }) {
     </div>
   );
 }
+
+
+/* 1. Slightly darker: the same gradient, with every stop about 6–10% deeper */
+const STOPS_DARKER = [
+  { color: "#ECF2FD", position: 0 },
+  { color: "#B5CBF7", position: 0.26 },
+  { color: "#90B0F0", position: 0.52 },
+  { color: "#E6EEFC", position: 0.76 },
+  { color: "#F7EEE6", position: 1 },
+];

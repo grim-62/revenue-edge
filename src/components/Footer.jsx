@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { deferGsap } from "../deferGsap";
+import ConsultationButton from "./ConsultationButton";
 
 /* Needs this as the first line of src/index.css:
    @import url("https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&display=swap"); */
@@ -56,21 +57,6 @@ const ICONS = {
     <path d="M14 8h2.5V4.5H14A3.5 3.5 0 0 0 10.5 8v2H8v3.5h2.5V20H14v-6.5h2.5L17 10h-3V8z" />
   ),
 };
-
-const Arrow = ({ className = "" }) => (
-  <svg
-    viewBox="0 0 24 24"
-    className={`h-4 w-4 ${className}`}
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.4"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M5 12h14M13 6l6 6-6 6" />
-  </svg>
-);
 
 function Column({ title, children }) {
   return (
@@ -187,19 +173,10 @@ export default function Footer({
                 the next step together.
               </p>
             </div>
-            <AppLink
+            <ConsultationButton
               href={ctaHref}
-              className="group inline-flex w-fit shrink-0 items-center gap-4 rounded-full bg-white py-1.5 pl-7 pr-1.5 text-[15px] font-semibold transition-colors duration-300 hover:bg-[#E8F0FF]"
-              style={{ color: C.primary }}
-            >
-              Book a consultation
-              <span
-                className="grid h-10 w-10 place-items-center rounded-full text-white"
-                style={{ backgroundColor: C.primary }}
-              >
-                <Arrow className="-rotate-45 transition-transform duration-300 group-hover:rotate-0" />
-              </span>
-            </AppLink>
+              variant="light"
+            />
           </div>
 
           {/* Columns */}

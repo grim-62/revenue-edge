@@ -175,7 +175,7 @@ export default function SectionSeven({ endpoint, onSubmit }) {
           {/* LEFT COLUMN */}
           <div className="flex min-w-0 flex-col px-1 py-3 sm:px-2 md:py-6">
             {/* Image appears first on mobile: a cover panel wipes away, then the picture settles */}
-            <div className="ct-illustration relative order-1 mb-6 min-h-64 overflow-hidden rounded-3xl bg-[#E8F0FF] sm:min-h-80 md:order-2 md:mb-0 md:mt-8 md:min-h-[30rem]">
+            <div className="ct-illustration relative order-1 mb-6 min-h-64 overflow-hidden rounded-3xl  sm:min-h-80 md:order-2 md:mb-0 md:mt-8 md:min-h-[30rem]">
               <img
                 src="/img12.jpg"
                 alt="Revenue Edge accounting and advisory"

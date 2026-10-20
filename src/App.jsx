@@ -3,6 +3,7 @@ import { Outlet, Route, Routes, useLocation, useParams } from "react-router-dom"
 import Shaderbackground from "./components/Shaderbackground";
 import RootLayout from "./layouts/RootLayout";
 import Home from "./views/Home/Home";
+import ReviewsPage from "./views/Review/Reviewspage";
 
 const AboutPage = lazy(() => import("./views/About/About"));
 const ContactPage = lazy(() => import("./views/Contact/Contact"));
@@ -72,6 +73,7 @@ const App = () => {
             <Route path="/about" element={<Suspense fallback={null}><AboutPage /></Suspense>} />
             <Route path="/contact" element={<Suspense fallback={null}><ContactPage /></Suspense>} />
             <Route path="/careers" element={<Suspense fallback={null}><CareerPage /></Suspense>} />
+            <Route path='/review' element={<Suspense fallback={null}><ReviewsPage /></Suspense>} />
           </Route>
           <Route path="*" element={<Suspense fallback={null}><NotFoundPage /></Suspense>} />
         </Routes>

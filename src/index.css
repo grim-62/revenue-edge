@@ -55,3 +55,7 @@
 :root {
 	font-family: "Archivo", ui-sans-serif, system-ui, sans-serif;
 }
+
+.bg {
+	background-color: #97b8f8;
+}

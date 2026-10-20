@@ -351,9 +351,9 @@ export default function ServicesPage({ categorySlug: propCat }) {
 
       {/* 5. Photo left, text right */}
       <section className="sv-stage mx-auto mt-16 grid max-w-5xl items-center gap-10 px-4 md:mt-24 md:grid-cols-2 md:gap-16">
-        <div className="sv-stage-photo mx-auto aspect-[4/3] w-full max-w-md overflow-hidden rounded-[1.5rem] bg-[#E8F0FF] sm:rounded-[2rem]">
+        <div className="sv-stage-photo ">
           <img
-            className="h-full w-full object-cover"
+            className="h-full w-full object-contain"
             src="./bookgirl.png"
             alt="Illustration of a person reading a book"
             draggable={false}

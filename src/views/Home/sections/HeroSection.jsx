@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { deferGsap } from "../../../deferGsap";
+import ConsultationButton from "../../../components/ConsultationButton";
 
 const HEADING_FONT = '"Archivo", ui-sans-serif, system-ui, sans-serif';
 
@@ -72,21 +73,6 @@ const Line = ({ tokens, images, color }) => (
       </span>
     ))}
   </span>
-);
-
-const Arrow = ({ className = "" }) => (
-  <svg
-    viewBox="0 0 24 24"
-    className={`h-4 w-4 ${className}`}
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.4"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M5 12h14M13 6l6 6-6 6" />
-  </svg>
 );
 
 const icon = {
@@ -184,7 +170,7 @@ export default function HeroSection({
           <h1
             aria-label="Financial clarity to accelerate your growth"
             style={{ fontFamily: HEADING_FONT }}
-            className="mt-5 text-[clamp(3rem,6.4vw,5.9rem)]  font-black uppercase leading-[1.05] tracking-[-0.035em] lg:max-w-6xl lg:text-[clamp(3.5rem,5vw,5.25rem)]"
+            className="mt-5 text-[clamp(3rem,6.4vw,5.9rem)] font-black uppercase leading-[1.05] tracking-[-0.035em] lg:max-w-6xl lg:text-[clamp(3.5rem,5vw,5.25rem)]"
           >
             <span aria-hidden="true">
               {LINES.map((l, i) => (
@@ -200,19 +186,11 @@ export default function HeroSection({
 
           {/* CTAs */}
           <div className="hero-fade mt-10 flex flex-col items-center gap-3 sm:flex-row">
-            <Link
-              to={consultationHref}
-              className="group inline-flex items-center gap-4 rounded-full py-1.5 pl-7 pr-1.5 text-[15px] font-semibold text-white transition-colors duration-300 hover:bg-[#0B3D91]"
-              style={{ backgroundColor: C.primary }}
-            >
-              Book Strategic Consultation
-              <span
-                className="grid h-10 w-10 place-items-center rounded-full"
-                style={{ backgroundColor: C.primaryLight, color: C.primary }}
-              >
-                <Arrow className="-rotate-45 transition-transform duration-300 group-hover:rotate-0" />
-              </span>
-            </Link>
+            <ConsultationButton
+              href={consultationHref}
+              label="Book Strategic Consultation"
+              variant="dark"
+            />
 
             <Link
               to={servicesHref}

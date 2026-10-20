@@ -57,6 +57,22 @@ const PlusMinus = ({ open }) => (
 const CategoryRow = memo(function CategoryRow({ cat, index, uid, isOpen, img, onClick }) {
   const btnId = `${uid}-btn-${cat.id}`;
   const panelId = `${uid}-panel-${cat.id}`;
+  const imageRef = useRef(null);
+  const [imageOffset, setImageOffset] = useState(0);
+
+  const alignImageToService = (event) => {
+    if (!window.matchMedia("(min-width: 768px)").matches || !imageRef.current) return;
+
+    const serviceRect = event.currentTarget.getBoundingClientRect();
+    const imageRect = imageRef.current.getBoundingClientRect();
+    const gridRect = imageRef.current.parentElement?.getBoundingClientRect();
+    if (!gridRect) return;
+
+    const imageBaseCenter = imageRect.top + imageRect.height / 2 - imageOffset;
+    const maxOffset = Math.max(0, (gridRect.height - imageRect.height) / 2);
+    const desiredOffset = serviceRect.top + serviceRect.height / 2 - imageBaseCenter;
+    setImageOffset(Math.max(-maxOffset, Math.min(maxOffset, desiredOffset)));
+  };
 
   const imageSrc =
     cat.image ||
@@ -72,27 +88,32 @@ const CategoryRow = memo(function CategoryRow({ cat, index, uid, isOpen, img, on
       className="sv-row group/panel border-t"
       style={{ borderColor: C.primary }}
     >
-      <h3>
+      <h3 className="flex items-center justify-between gap-3 py-5 sm:gap-6 sm:py-7 md:py-9">
+        <Link
+          to={cat.href ?? `/service/${cat.id}`}
+          className="group/title flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2 rounded-sm text-left outline-none focus-visible:ring-2 focus-visible:ring-[#0B3D91]"
+          style={{ color: C.primary }}
+        >
+          <span className="relative text-xl font-semibold tracking-tight transition-transform duration-300 group-hover/title:translate-x-1 sm:text-2xl md:text-4xl after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-[#0B3D91] after:transition-transform after:duration-300 group-hover/title:after:scale-x-100 group-focus-visible/title:after:scale-x-100">
+            {cat.title}
+          </span>
+          <span
+            className="rounded-full px-3 py-1 text-xs font-semibold"
+            style={{ backgroundColor: C.primaryLight, color: C.primaryHover }}
+          >
+            {cat.items.length} {cat.items.length === 1 ? "service" : "services"}
+          </span>
+        </Link>
         <button
           type="button"
           id={btnId}
           aria-expanded={isOpen}
           aria-controls={panelId}
           onClick={() => onClick(index)}
-          className="group flex w-full items-center justify-between gap-3 py-5 text-left outline-none focus-visible:ring-2 focus-visible:ring-[#0B3D91] sm:gap-6 sm:py-7 md:py-9"
+          aria-label={`${isOpen ? "Collapse" : "Expand"} ${cat.title} services`}
+          className="group flex min-h-11 min-w-11 flex-1 items-center justify-end rounded-full outline-none focus-visible:ring-2 focus-visible:ring-[#0B3D91]"
           style={{ color: C.primary }}
         >
-          <span className="flex flex-wrap items-center gap-x-4 gap-y-2">
-            <span className="text-xl font-semibold tracking-tight transition-transform duration-300 group-hover:translate-x-1 sm:text-2xl md:text-4xl">
-              {cat.title}
-            </span>
-            <span
-              className="rounded-full px-3 py-1 text-xs font-semibold"
-              style={{ backgroundColor: C.primaryLight, color: C.primaryHover }}
-            >
-              {cat.items.length} {cat.items.length === 1 ? "service" : "services"}
-            </span>
-          </span>
           <PlusMinus open={isOpen} />
         </button>
       </h3>
@@ -115,7 +136,13 @@ const CategoryRow = memo(function CategoryRow({ cat, index, uid, isOpen, img, on
                   {cat.intro}
                 </p>
               )}
-              <ul className="mt-6 sm:mt-8">
+              <ul
+                className="mt-6 sm:mt-8"
+                onPointerLeave={() => setImageOffset(0)}
+                onBlur={(event) => {
+                  if (!event.currentTarget.contains(event.relatedTarget)) setImageOffset(0);
+                }}
+              >
                 {cat.items.map((raw, n) => {
                   const item = typeof raw === "string" ? { name: raw, href: cat.href } : raw;
                   return (
@@ -126,6 +153,8 @@ const CategoryRow = memo(function CategoryRow({ cat, index, uid, isOpen, img, on
                     >
                       <Link
                         to={item.href ?? cat.href}
+                        onPointerEnter={alignImageToService}
+                        onFocus={alignImageToService}
                         className="group/item relative flex items-center justify-between gap-4 border-b py-4 outline-none transition-[padding] duration-300 hover:pl-2 focus-visible:pl-2"
                         style={{ borderColor: C.border, color: C.primary }}
                       >
@@ -178,8 +207,9 @@ const CategoryRow = memo(function CategoryRow({ cat, index, uid, isOpen, img, on
 
             {/* image */}
             <div
-              className="relative mx-auto aspect-[5/4] w-full max-w-lg scale-90 -rotate-[5deg] rounded-2xl border  opacity-0 transition-[opacity,transform] duration-700 [transition-timing-function:cubic-bezier(0.34,1.56,0.64,1)] group-data-[open=true]/panel:scale-100 group-data-[open=true]/panel:rotate-0 group-data-[open=true]/panel:opacity-100 group-data-[open=true]/panel:delay-150 motion-reduce:scale-100 motion-reduce:rotate-0 motion-reduce:opacity-100 motion-reduce:transition-none sm:rounded-[2rem]"
-              style={{ backgroundColor: C.primaryLight, borderColor: C.border }}
+              ref={imageRef}
+              className="relative mx-auto aspect-[5/4] w-full max-w-lg scale-90 -rotate-[5deg] rounded-2xl border opacity-0 transition-[opacity,transform,translate] duration-[1300ms] ease-in-out group-data-[open=true]/panel:scale-100 group-data-[open=true]/panel:rotate-0 group-data-[open=true]/panel:opacity-100 group-data-[open=true]/panel:delay-150 motion-reduce:scale-100 motion-reduce:rotate-0 motion-reduce:opacity-100 motion-reduce:transition-none sm:rounded-[2rem] md:translate-y-[var(--image-offset)]"
+              style={{ backgroundColor: C.primaryLight, borderColor: C.border, "--image-offset": `${imageOffset}px` }}
             >
               <img
                 src={imageSrc}

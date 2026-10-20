@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { serviceCategories } from "../data/serviceData";
+import ConsultationButton from "./ConsultationButton";
 
 const NAVIGATION = [
   { label: "Our Services", href: "/services" },
@@ -401,16 +402,14 @@ export default function Navbar() {
               );
             })}
 
-            <Link
-              to={CTA.href}
+            <ConsultationButton
+              href={CTA.href}
+              label={CTA.label}
+              variant="dark"
+              size="compact"
+              className="ml-3"
               onClick={go}
-              className="group ml-3 inline-flex items-center gap-3 rounded-full bg-[#001022] py-1.5 pl-5 pr-1.5 text-sm font-semibold text-white outline-none transition-colors duration-300 hover:bg-[#0B3D91] focus-visible:ring-2 focus-visible:ring-[#0B3D91] focus-visible:ring-offset-2"
-            >
-              {CTA.label}
-              <span className="grid h-8 w-8 place-items-center rounded-full bg-white text-[#001022]">
-                <ArrowIcon className="-rotate-45 transition-transform duration-300 group-hover:rotate-0" />
-              </span>
-            </Link>
+            />
           </div>
 
           {/* Mobile toggle */}
@@ -488,16 +487,13 @@ export default function Navbar() {
             })}
           </ul>
 
-          <Link
-            to={CTA.href}
+          <ConsultationButton
+            href={CTA.href}
+            label={CTA.label}
+            variant="dark"
+            className="mt-3 w-full justify-between pl-6"
             onClick={go}
-            className="group mt-3 flex items-center justify-between rounded-full bg-[#001022] py-1.5 pl-6 pr-1.5 text-[15px] font-semibold text-white outline-none transition-colors hover:bg-[#0B3D91] focus-visible:ring-2 focus-visible:ring-[#0B3D91] focus-visible:ring-offset-2"
-          >
-            {CTA.label}
-            <span className="grid h-10 w-10 place-items-center rounded-full bg-white text-[#001022]">
-              <ArrowIcon className="-rotate-45 transition-transform duration-300 group-hover:rotate-0" />
-            </span>
-          </Link>
+          />
         </div>
       </div>
     </header>
