@@ -4,8 +4,7 @@ import { deferGsap } from "../../deferGsap";
 import {
   getServiceCategory,
   getAdjacentCategories,
-} from "../../data/serviceData";
-
+} from "../../data/serviceData";import ConsultationButton from "../../components/ConsultationButton";
 /* Needs this as the first line of src/index.css:
    @import url("https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&display=swap"); */
 const HEADING_FONT = '"Archivo", ui-sans-serif, system-ui, sans-serif';
@@ -376,7 +375,14 @@ export default function ServiceCategoryPage({
           /* 1. Hero: card reveal, title rise, image wipes in from the right */
           const hero = gsap
             .timeline({ defaults: { ease: "power4.out" } })
-            .from(".sc-hero", { y: 28, opacity: 0, duration: 0.9 })
+            .from(".sc-hero", {
+              clipPath: "inset(50% 0% 50% 0%)",
+              y: 12,
+              opacity: 0,
+              duration: 1,
+              transformOrigin: "center center",
+              clearProps: "clipPath,opacity,transform,transformOrigin",
+            })
             .from(".sc-crumb", { x: -24, opacity: 0, duration: 0.6 }, "-=0.6")
             .from(".sc-label", { y: 16, opacity: 0, duration: 0.6 }, "-=0.5")
             .from(
@@ -497,6 +503,7 @@ export default function ServiceCategoryPage({
           gsap.utils.toArray(".sc-incl").forEach((item, i) => {
             gsap.from(item, {
               x: i % 2 === 0 ? -70 : 70,
+              rotate: i % 2 === 0 ? -1.5 : 1.5,
               opacity: 0,
               duration: 1,
               ease: "power3.out",
@@ -672,7 +679,7 @@ export default function ServiceCategoryPage({
               </p>
             )}
             <div className="sc-herotext mt-8 flex flex-wrap items-center gap-4">
-              <PillLink to={contactHref}>Talk to our team</PillLink>
+              <ConsultationButton href="/contact" />
               <a
                 href="#all-services"
                 className="rounded-full border bg-white px-5 py-3 text-sm font-semibold outline-none transition-colors hover:bg-[#001022] hover:text-white focus-visible:ring-2 focus-visible:ring-[#0B3D91]"

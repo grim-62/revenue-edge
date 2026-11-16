@@ -9,6 +9,7 @@ import {
 } from "./AdminShared";
 import { ROLE_STATUS, uid } from "./AdminData";
 
+/* SAMPLE DATA: replace by passing real data as props, or by loading it from your API */
 const SAMPLE_ROLES = [
   { id: "r1", title: "Tax Accountant", team: "Tax", type: "Full-time", place: "Hybrid", status: "open", description: "Prepare and review tax returns for individuals and small businesses.", posted: "2026-09-12" },
   { id: "r2", title: "Business Advisory Associate", team: "Advisory", type: "Full-time", place: "Hybrid", status: "open", description: "Support clients with forecasting, planning and reporting.", posted: "2026-09-28" },
@@ -36,7 +37,11 @@ function ConfirmDialog({ confirm, onClose }) {
       <p className="text-[15px] leading-relaxed text-slate-600">{confirm?.body}</p>
       <div className="mt-6 flex justify-end gap-3">
         <GhostButton onClick={onClose}>Cancel</GhostButton>
-        <button type="button" onClick={() => { confirm?.onConfirm(); onClose(); }} className="inline-flex items-center gap-2 rounded-full bg-rose-600 px-5 py-2.5 text-sm font-semibold text-white outline-none transition-colors hover:bg-rose-700 focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2">
+        <button
+          type="button"
+          onClick={() => { confirm?.onConfirm(); onClose(); }}
+          className="inline-flex items-center gap-2 rounded-full bg-rose-600 px-5 py-2.5 text-sm font-semibold text-white outline-none transition-[background-color,transform] duration-300 hover:bg-rose-700 focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 active:scale-[0.98]"
+        >
           <AdminIcon name="trash" /> Delete
         </button>
       </div>
@@ -44,10 +49,33 @@ function ConfirmDialog({ confirm, onClose }) {
   );
 }
 
+/* Prototype notice: collapses smoothly when dismissed */
+function PrototypeNotice({ onSignIn }) {
+  const [open, setOpen] = useState(true);
+  return (
+    <div className={`grid transition-[grid-template-rows,opacity,margin] duration-500 ease-out ${open ? "mb-6 grid-rows-[1fr] opacity-100" : "mb-0 grid-rows-[0fr] opacity-0"}`} aria-hidden={!open}>
+      <div className="overflow-hidden">
+        <div className="ad-head flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#BCD0FF] bg-[#E8F0FF] px-4 py-3 text-sm text-[#001022]">
+          <span className="flex items-center gap-3">
+            <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white text-xs font-black text-[#0B3D91]">!</span>
+            <span><strong>Prototype data.</strong> Changes live in memory only until your API is connected.</span>
+          </span>
+          <span className="flex items-center gap-4">
+            <button type="button" onClick={onSignIn} className="font-semibold text-[#0B3D91] underline underline-offset-4 outline-none focus-visible:ring-2 focus-visible:ring-[#0B3D91]">Admin sign in</button>
+            <button type="button" onClick={() => setOpen(false)} aria-label="Dismiss notice" className="grid h-8 w-8 place-items-center rounded-full outline-none transition-[background-color,transform] duration-300 hover:scale-110 hover:bg-white focus-visible:ring-2 focus-visible:ring-[#0B3D91]">×</button>
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminDashboard({
   roles: initialRoles = SAMPLE_ROLES,
   applications: initialApplications = SAMPLE_APPLICATIONS,
   reviews: initialReviews = SAMPLE_REVIEWS,
+  /* Optional async callbacks. Throw to roll the change back:
+     api = { saveRole, deleteRole, updateApplication, updateReview, deleteReview } */
   api = {},
   adminName = "Admin",
   onLogout,
@@ -71,6 +99,7 @@ export default function AdminDashboard({
 
   useEffect(() => () => clearTimeout(toastTimer.current), []);
 
+  /* optimistic update: apply now, roll back if the API call throws */
   const act = useCallback(async (call, apply, revert, successMessage) => {
     apply();
     try {
@@ -173,11 +202,20 @@ export default function AdminDashboard({
 
   return (
     <AdminLayout navItems={navItems} adminName={adminName} onLogout={onLogout} siteHref={siteHref}>
-      <div className="ad-head mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#D8E9E4] bg-[#EDF5F2] px-4 py-3 text-sm text-[#365B54]">
-        <span><strong>Prototype data.</strong> Changes are in memory only until the Express API is connected.</span>
-        <button type="button" onClick={() => navigate("/admin/login")} className="font-semibold underline underline-offset-4">Admin sign in</button>
-      </div>
-      <Outlet context={{ roles, applications, reviews, onSaveRole: saveRole, onSetRoleStatus: setRoleStatus, onDeleteRole: deleteRole, onUpdateApplication: updateApplication, onPatchReview: updateReview, onDeleteReview: deleteReview }} />
+      <PrototypeNotice onSignIn={() => navigate("/admin/login")} />
+      <Outlet
+        context={{
+          roles,
+          applications,
+          reviews,
+          onSaveRole: saveRole,
+          onSetRoleStatus: setRoleStatus,
+          onDeleteRole: deleteRole,
+          onUpdateApplication: updateApplication,
+          onPatchReview: updateReview,
+          onDeleteReview: deleteReview,
+        }}
+      />
       <ConfirmDialog confirm={confirm} onClose={() => setConfirm(null)} />
       <Toast toast={toast} />
     </AdminLayout>

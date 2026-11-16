@@ -130,12 +130,12 @@ export default function ContactPage() {
             A good conversation starts here
           </p>
           <h1
-            aria-label="Let’s chat."
+            aria-label="Tell us what’s next."
             className="mt-4 max-w-4xl text-[clamp(3rem,8vw,6.5rem)] font-black uppercase leading-[0.9] tracking-[-0.055em] text-[#001022]"
             style={{ fontFamily: HEADING_FONT }}
           >
             <span aria-hidden="true">
-              <Words text="Let’s chat." css delay={0.25} />
+              <Words text="Tell us what’s next." css delay={0.25} />
             </span>
           </h1>
           <p

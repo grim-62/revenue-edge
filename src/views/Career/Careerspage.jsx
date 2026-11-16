@@ -76,6 +76,32 @@ function Check() {
   );
 }
 
+/* Keeps the popup mounted while it plays its exit transition */
+function useMountTransition(open, ms = 850) {
+  const [mounted, setMounted] = useState(open);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    if (open) {
+      setMounted(true);
+      const id = requestAnimationFrame(() => requestAnimationFrame(() => setVisible(true)));
+      return () => cancelAnimationFrame(id);
+    }
+    setVisible(false);
+    const t = setTimeout(() => setMounted(false), ms);
+    return () => clearTimeout(t);
+  }, [open, ms]);
+  return { mounted, visible };
+}
+
+function Cross() {
+  return (
+    <svg viewBox="0 0 52 52" className="h-16 w-16" fill="none" stroke="#E11D48" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle className="cr-draw" pathLength="1" strokeDasharray="1" cx="26" cy="26" r="23" />
+      <path className="cr-draw" pathLength="1" strokeDasharray="1" d="M18 18l16 16M34 18L18 34" />
+    </svg>
+  );
+}
+
 /* Each word sits in a mask so it can slide up into view */
 function Words({ text }) {
   return text.split(" ").map((word, i) => (
@@ -107,9 +133,9 @@ const Title = ({ text, className = "" }) => (
   </h2>
 );
 
-function Field({ label, error, children, className = "" }) {
+function Field({ label, error, children, className = "", style }) {
   return (
-    <div className={`cr-field ${className}`}>
+    <div className={`cr-field ${className}`} style={style}>
       <label className="block text-sm font-semibold" style={{ color: C.ink }}>
         {label}
         {children}
@@ -180,9 +206,52 @@ export default function CareersPage({ contactHref = "/contact", endpoint = "", o
   const [nlStatus, setNlStatus] = useState("idle"); // idle | sending | success | error
   const [nlError, setNlError] = useState("");
 
-  const chooseRole = (title) => {
+  /* ---------- Apply popup ---------- */
+  const [modalOpen, setModalOpen] = useState(false);
+  const [formKey, setFormKey] = useState(0);
+  const lastTrigger = useRef(null);
+  const { mounted, visible } = useMountTransition(modalOpen);
+  const sending = status === "sending";
+
+  const openModal = (title) => {
+    lastTrigger.current = document.activeElement;
     setRole(title);
-    document.getElementById("apply")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    setErrors({});
+    setStatus("idle");
+    setFormKey((k) => k + 1); // fresh, empty form each time
+    setModalOpen(true);
+  };
+
+  const closeModal = useCallback(() => {
+    if (sending) return;
+    setModalOpen(false);
+    setTimeout(() => lastTrigger.current?.focus?.(), 850);
+  }, [sending]);
+
+  /* Escape closes, page behind stops scrolling while the popup is open */
+  useEffect(() => {
+    if (!modalOpen) return undefined;
+    const onKey = (e) => e.key === "Escape" && closeModal();
+    window.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [modalOpen, closeModal]);
+
+  /* focus the first field once the popup has opened */
+  useEffect(() => {
+    if (!visible) return undefined;
+    const id = setTimeout(() => formRef.current?.querySelector('[name="name"]')?.focus(), 1000);
+    return () => clearTimeout(id);
+  }, [visible, formKey]);
+
+  const shake = () => {
+    const g = gsapRef.current;
+    if (!g || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    g.to(".cr-modal", { keyframes: { x: [0, -9, 8, -6, 4, 0] }, duration: 0.45, ease: "power2.out", overwrite: "auto" });
   };
 
   /* ---------- Application form ---------- */
@@ -204,6 +273,7 @@ export default function CareersPage({ contactHref = "/contact", endpoint = "", o
     setErrors(next);
     if (Object.keys(next).length) {
       formRef.current?.querySelector(`[name="${Object.keys(next)[0]}"]`)?.focus();
+      shake();
       return;
     }
 
@@ -309,7 +379,14 @@ export default function CareersPage({ contactHref = "/contact", endpoint = "", o
           /* 1. Hero: card opens, title rises, photo wipes in from the right and drifts */
           gsap
             .timeline({ defaults: { ease: "power4.out" } })
-            .from(".cr-hero", { y: 28, opacity: 0, duration: 0.9 })
+            .from(".cr-hero", {
+              clipPath: "inset(50% 0% 50% 0%)",
+              y: 12,
+              opacity: 0,
+              duration: 1,
+              transformOrigin: "center center",
+              clearProps: "clipPath,opacity,transform,transformOrigin",
+            })
             .from(".cr-badge", { y: 16, opacity: 0, duration: 0.6 }, "-=0.6")
             .from(".cr-hero .cr-word", { yPercent: 115, duration: 1.05, stagger: 0.07 }, "-=0.35")
             .from(".cr-hero-cta", { y: 16, opacity: 0, duration: 0.6 }, "-=0.5")
@@ -364,19 +441,6 @@ export default function CareersPage({ contactHref = "/contact", endpoint = "", o
           });
           gsap.from(".cr-roles-note", { y: 18, opacity: 0, duration: 0.7, ease: "power3.out", scrollTrigger: once(".cr-roles-note", "top 94%") });
 
-          /* 6. Application: info slides from the left, card opens, fields rise in order */
-          gsap
-            .timeline({ defaults: { ease: "power3.out" }, scrollTrigger: once(".cr-apply", "top 75%") })
-            .from(".cr-apply .cr-word", { yPercent: 115, duration: 1, stagger: 0.06, ease: "power4.out" })
-            .from(".cr-apply-info .cr-fade", { x: -40, opacity: 0, duration: 0.8, stagger: 0.1 }, "-=0.6")
-            .fromTo(
-              ".cr-card",
-              { clipPath: "inset(8% 4% 8% 4% round 2rem)", opacity: 0, y: 40 },
-              { clipPath: "inset(0% 0% 0% 0% round 1.75rem)", opacity: 1, y: 0, duration: 1.1, ease: "power4.out", clearProps: "clipPath,opacity,transform" },
-              "-=1.1"
-            )
-            .from(".cr-card .cr-field", { y: 24, opacity: 0, duration: 0.7, stagger: 0.07, clearProps: "transform,opacity" }, "-=0.6");
-
           /* 7. Team say: title rises, card opens from the middle, controls pop */
           gsap.from(".cr-say .cr-word", { yPercent: 115, duration: 1, stagger: 0.07, ease: "power4.out", scrollTrigger: once(".cr-say", "top 82%") });
           gsap
@@ -387,21 +451,6 @@ export default function CareersPage({ contactHref = "/contact", endpoint = "", o
               { clipPath: "inset(0% 0% 0% 0% round 1.75rem)", opacity: 1, y: 0, duration: 1.1, ease: "power4.out", clearProps: "clipPath,opacity,transform" }
             )
             .from(".cr-slider-ctl", { scale: 0.6, opacity: 0, duration: 0.6, stagger: 0.06, ease: "back.out(1.8)" }, "-=0.5");
-
-          /* 8. Newsletter: card slides up, text from the left, sketch from the right */
-          gsap
-            .timeline({ defaults: { ease: "power3.out" }, scrollTrigger: once(".cr-news", "top 82%") })
-            .fromTo(
-              ".cr-news",
-              { clipPath: "inset(10% 5% 10% 5% round 2rem)", opacity: 0, y: 40 },
-              { clipPath: "inset(0% 0% 0% 0% round 1.75rem)", opacity: 1, y: 0, duration: 1.1, ease: "power4.out", clearProps: "clipPath,opacity,transform" }
-            )
-            .from(".cr-news .cr-word", { yPercent: 115, duration: 0.9, stagger: 0.07, ease: "power4.out" }, "-=0.6")
-            .from(".cr-news .cr-fade", { x: -30, opacity: 0, duration: 0.7, stagger: 0.1 }, "-=0.6")
-            .from(".cr-news-art", { x: 50, opacity: 0, rotate: 4, duration: 1 }, "-=0.9")
-            .from(".cr-news-art .cr-sketch", { strokeDashoffset: 1, duration: 1.3, ease: "power2.inOut", stagger: 0.03 }, "-=0.8");
-
-          gsap.to(".cr-news-art", { y: -6, duration: 2.6, ease: "sine.inOut", yoyo: true, repeat: -1 });
         });
       }, el);
 
@@ -416,14 +465,15 @@ export default function CareersPage({ contactHref = "/contact", endpoint = "", o
     };
   }, []);
 
-  /* Success state: tick draws itself, message follows */
+  /* Result screens (success tick / error cross) draw themselves, then the text follows */
   useEffect(() => {
-    if (status !== "success" && nlStatus !== "success") return undefined;
+    if (status !== "success" && status !== "error" && nlStatus !== "success") return undefined;
     return deferGsap((gsap) => {
+      if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return undefined;
       const ctx = gsap.context(() => {
         gsap
           .timeline({ defaults: { ease: "power3.out" } })
-          .from(".cr-success", { scale: 0.96, opacity: 0, duration: 0.5 })
+          .from(".cr-result, .cr-success", { scale: 0.96, opacity: 0, duration: 0.5 })
           .from(".cr-draw", { strokeDashoffset: 1, duration: 0.9, stagger: 0.25, ease: "power2.inOut" }, "-=0.2")
           .from(".cr-success-item", { y: 18, opacity: 0, duration: 0.6, stagger: 0.1 }, "-=0.4");
       }, root);
@@ -462,7 +512,7 @@ export default function CareersPage({ contactHref = "/contact", endpoint = "", o
           </div>
 
           <div className="cr-hero-img mx-auto mt-10 h-64 w-full max-w-sm overflow-hidden rounded-[1.5rem] md:mt-0 md:h-96" style={{ backgroundColor: C.blue }}>
-            <img src="./img3.jpg" alt="" draggable={false} className="h-full w-full scale-110 object-cover" />
+            <img src="./img21.jpg" alt="" draggable={false} className="h-full w-full scale-110 object-cover" />
           </div>
         </section>
 
@@ -529,7 +579,7 @@ export default function CareersPage({ contactHref = "/contact", endpoint = "", o
               <li key={r.title}>
                 <button
                   type="button"
-                  onClick={() => chooseRole(r.title)}
+                  onClick={() => openModal(r.title)}
                   className="cr-role group flex w-full flex-col gap-4 rounded-[1.5rem] px-6 py-5 text-left outline-none transition-[transform,background-color,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:bg-[#DCE8FF] hover:shadow-[0_24px_40px_-28px_rgba(0,16,34,0.35)] focus-visible:ring-2 focus-visible:ring-[#0B3D91] sm:flex-row sm:items-center sm:justify-between sm:px-8 sm:py-6"
                   style={{ backgroundColor: C.light }}
                 >
@@ -553,113 +603,11 @@ export default function CareersPage({ contactHref = "/contact", endpoint = "", o
           </ul>
           <p className="cr-roles-note mt-8 text-[15px]" style={{ color: C.muted }}>
             Don’t see your role?{" "}
-            <button type="button" onClick={() => chooseRole("General application")} className="font-semibold underline underline-offset-4 transition-colors hover:text-[#0B3D91]" style={{ color: C.ink }}>
+            <button type="button" onClick={() => openModal("General application")} className="font-semibold underline underline-offset-4 transition-colors hover:text-[#0B3D91]" style={{ color: C.ink }}>
               Send us a general application
             </button>
             .
           </p>
-        </section>
-
-        {/* 6. Application form */}
-        <section id="apply" className="cr-apply mb-16 scroll-mt-24 sm:mb-24">
-          <div className="grid gap-10 md:grid-cols-[0.8fr_1.2fr] md:gap-14">
-            <div className="cr-apply-info md:sticky md:top-28 md:self-start">
-              <Title text="Apply in two minutes." className="text-[clamp(2rem,4vw,3.2rem)]" />
-              <p className="cr-fade mt-5 max-w-md text-base leading-relaxed" style={{ color: C.muted }}>
-                Tell us a little about yourself. A real person reads every application.
-              </p>
-              <ul className="mt-8 space-y-4">
-                {["We reply within five working days", "Your details are only used for hiring", "No cover letter required"].map((t) => (
-                  <li key={t} className="cr-fade flex items-center gap-3 text-[15px] font-semibold" style={{ color: C.ink }}>
-                    <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full" style={{ backgroundColor: C.blue }}>
-                      <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke={C.ink} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 13l4 4 10-10" /></svg>
-                    </span>
-                    {t}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="cr-card rounded-[1.75rem] border p-6 sm:p-10" style={{ backgroundColor: C.tint, borderColor: C.border }}>
-              {status === "success" ? (
-                <div className="cr-success flex min-h-[26rem] flex-col items-center justify-center text-center" role="status">
-                  <Check />
-                  <h3 className="cr-success-item mt-6 text-2xl font-bold" style={{ color: C.ink }}>Application received</h3>
-                  <p className="cr-success-item mt-3 max-w-sm text-[15px] leading-relaxed" style={{ color: C.muted }}>
-                    Thanks for applying. We’ll review it and get back to you within five working days.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => { setStatus("idle"); setRole(""); setErrors({}); }}
-                    className="cr-success-item mt-6 text-sm font-semibold underline underline-offset-4 transition-colors hover:text-[#0B3D91]"
-                    style={{ color: C.ink }}
-                  >
-                    Send another application
-                  </button>
-                </div>
-              ) : (
-                <form ref={formRef} onSubmit={handleSubmit} noValidate className="grid gap-5 sm:grid-cols-2">
-                  {/* honeypot */}
-                  <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
-
-                  <Field label="Full name" error={errors.name}>
-                    <input name="name" type="text" autoComplete="name" placeholder="Your name" className={`${inputCls} mt-2`} style={{ borderColor: errors.name ? "#DC2626" : C.border }} />
-                  </Field>
-                  <Field label="Email" error={errors.email}>
-                    <input name="email" type="email" autoComplete="email" placeholder="you@example.com" className={`${inputCls} mt-2`} style={{ borderColor: errors.email ? "#DC2626" : C.border }} />
-                  </Field>
-                  <Field label="Phone">
-                    <input name="phone" type="tel" autoComplete="tel" placeholder="+91 00000 00000" className={`${inputCls} mt-2`} style={{ borderColor: C.border }} />
-                  </Field>
-                  <Field label="Role" error={errors.role}>
-                    <select
-                      name="role"
-                      value={role}
-                      onChange={(e) => setRole(e.target.value)}
-                      className={`${inputCls} mt-2`}
-                      style={{ borderColor: errors.role ? "#DC2626" : C.border }}
-                    >
-                      <option value="">Choose a role</option>
-                      {ROLES.map((r) => (
-                        <option key={r.title} value={r.title}>{r.title}</option>
-                      ))}
-                      <option value="General application">General application</option>
-                    </select>
-                  </Field>
-                  <Field label="LinkedIn or portfolio (optional)" className="sm:col-span-2">
-                    <input name="link" type="url" placeholder="https://" className={`${inputCls} mt-2`} style={{ borderColor: C.border }} />
-                  </Field>
-                  <Field label="Why Revenue Edge? (optional)" className="sm:col-span-2">
-                    <textarea name="message" rows={4} placeholder="A few lines about you and what you’re looking for" className={`${inputCls} mt-2 resize-none`} style={{ borderColor: C.border }} />
-                  </Field>
-
-                  <div className="cr-field sm:col-span-2">
-                    <button
-                      type="submit"
-                      disabled={status === "sending"}
-                      className="group inline-flex items-center gap-4 rounded-full py-2 pl-7 pr-2 text-[15px] font-semibold text-white outline-none transition-all duration-300 hover:bg-[#0B3D91] focus-visible:ring-2 focus-visible:ring-[#0B3D91] focus-visible:ring-offset-2 active:scale-[0.98] disabled:opacity-70"
-                      style={{ backgroundColor: C.ink }}
-                    >
-                      {status === "sending" ? "Sending…" : "Submit application"}
-                      <span className="grid h-10 w-10 place-items-center rounded-full bg-white" style={{ color: C.ink }}>
-                        {status === "sending" ? (
-                          <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                        ) : (
-                          <Arrow className="-rotate-45 transition-transform duration-300 group-hover:rotate-0" />
-                        )}
-                      </span>
-                    </button>
-                    <p
-                      role="alert"
-                      className={`overflow-hidden text-sm text-red-600 transition-all duration-300 ${status === "error" ? "mt-3 max-h-10 opacity-100" : "max-h-0 opacity-0"}`}
-                    >
-                      Something went wrong sending your application. Please try again.
-                    </p>
-                  </div>
-                </form>
-              )}
-            </div>
-          </div>
         </section>
 
         {/* 7. What our team say */}
@@ -712,65 +660,180 @@ export default function CareersPage({ contactHref = "/contact", endpoint = "", o
           </div>
         </section>
 
-        {/* 8. In the know (newsletter) */}
-        <section className="cr-news mx-auto mt-16 max-w-4xl overflow-hidden rounded-[1.75rem] px-6 py-10 sm:mt-24 sm:px-12 sm:py-14 md:grid md:grid-cols-[1.2fr_1fr] md:items-center md:gap-8" style={{ backgroundColor: C.blue }}>
-          <div>
-            <Title text="In the know…" className="text-[clamp(1.9rem,3.6vw,3rem)]" />
-            <p className="cr-fade mt-4 max-w-md text-[15px] leading-relaxed" style={{ color: "#1E293B" }}>
-              Want to stay ahead of the curve on tax, finance and business? Drop your email to receive our monthly newsletter.
-            </p>
+      </div>
 
-            {nlStatus === "success" ? (
-              <p className="cr-success cr-success-item mt-6 flex items-center gap-3 text-[15px] font-semibold" style={{ color: C.ink }} role="status">
-                <span className="grid h-8 w-8 place-items-center rounded-full bg-white">
-                  <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke={C.ink} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 13l4 4 10-10" /></svg>
-                </span>
-                You’re on the list. Thank you!
-              </p>
-            ) : (
-              <form onSubmit={handleNewsletter} noValidate className="cr-fade mt-6">
-                <div className="flex flex-col gap-3 sm:flex-row">
-                  <label className="sr-only" htmlFor="nl-email">Email</label>
-                  <input
-                    id="nl-email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    placeholder="Email*"
-                    className={`${inputCls} sm:flex-1`}
-                    style={{ borderColor: nlError ? "#DC2626" : "transparent", borderRadius: "9999px" }}
-                  />
+      {/* Apply popup */}
+      {mounted && (
+        <div className="fixed inset-0 z-50 grid place-items-center p-4" role="dialog" aria-modal="true" aria-label={role ? `Apply for ${role}` : "Apply"}>
+          <div
+            onClick={closeModal}
+            className="absolute inset-0 bg-[#001022]/55 backdrop-blur-sm"
+            style={{ opacity: visible ? 1 : 0, transition: visible ? "opacity 350ms ease-out" : "opacity 350ms ease-in 450ms" }}
+          />
+
+          <div className="cr-modal relative w-full max-w-xl [filter:drop-shadow(0_30px_40px_rgba(0,16,34,0.35))]">
+          <div
+            className="max-h-[90vh] w-full overflow-y-auto rounded-[1.75rem] bg-white p-6 sm:p-9"
+            style={{
+              clipPath: visible ? "inset(0% 0% 0% 0% round 1.75rem)" : "inset(50% 0% 50% 0% round 1.75rem)",
+              transition: visible
+                ? "clip-path 750ms cubic-bezier(0.22, 1, 0.36, 1) 250ms"
+                : "clip-path 450ms cubic-bezier(0.65, 0, 0.35, 1) 120ms",
+            }}
+          >
+            {/* header */}
+            <div
+              className={`flex items-start justify-between gap-4 transition-[opacity,transform] duration-500 ease-out ${visible ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"}`}
+              style={{ transitionDelay: visible ? "800ms" : "0ms" }}
+            >
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em]" style={{ color: C.hover }}>Application</p>
+                <h2 style={{ fontFamily: HEADING_FONT, color: C.ink }} className="mt-2 text-[clamp(1.5rem,3.4vw,2.1rem)] font-black uppercase leading-[1.05] tracking-[-0.03em]">
+                  {role ? role : "Apply to join us"}
+                </h2>
+              </div>
+              <button
+                type="button"
+                aria-label="Close"
+                onClick={closeModal}
+                disabled={sending}
+                className="grid h-10 w-10 shrink-0 place-items-center rounded-full border bg-white outline-none transition-[background-color,transform] duration-300 hover:rotate-90 hover:bg-[#E8F0FF] focus-visible:ring-2 focus-visible:ring-[#0B3D91] disabled:opacity-40"
+                style={{ borderColor: C.border, color: C.ink }}
+              >
+                <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+              </button>
+            </div>
+
+            {/* success */}
+            {status === "success" && (
+              <div className="cr-result flex min-h-[22rem] flex-col items-center justify-center text-center" role="status">
+                <Check />
+                <h3 className="cr-success-item mt-6 text-2xl font-bold" style={{ color: C.ink }}>Application received</h3>
+                <p className="cr-success-item mt-3 max-w-sm text-[15px] leading-relaxed" style={{ color: C.muted }}>
+                  Thanks for applying{role ? ` for ${role}` : ""}. We’ll review it and get back to you within five working days.
+                </p>
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="cr-success-item group mt-7 inline-flex items-center gap-4 rounded-full py-2 pl-7 pr-2 text-[15px] font-semibold text-white outline-none transition-all duration-300 hover:bg-[#0B3D91] focus-visible:ring-2 focus-visible:ring-[#0B3D91] focus-visible:ring-offset-2 active:scale-[0.98]"
+                  style={{ backgroundColor: C.ink }}
+                >
+                  Done
+                  <span className="grid h-10 w-10 place-items-center rounded-full bg-white" style={{ color: C.ink }}>
+                    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 13l4 4 10-10" /></svg>
+                  </span>
+                </button>
+              </div>
+            )}
+
+            {/* failed */}
+            {status === "error" && (
+              <div className="cr-result flex min-h-[22rem] flex-col items-center justify-center text-center" role="alert">
+                <Cross />
+                <h3 className="cr-success-item mt-6 text-2xl font-bold" style={{ color: C.ink }}>We couldn’t send that</h3>
+                <p className="cr-success-item mt-3 max-w-sm text-[15px] leading-relaxed" style={{ color: C.muted }}>
+                  Something went wrong on our side. Your details are still saved in the form, so you can try again.
+                </p>
+                <div className="cr-success-item mt-7 flex flex-wrap justify-center gap-3">
                   <button
-                    type="submit"
-                    disabled={nlStatus === "sending"}
-                    className="rounded-full px-7 py-3 text-[15px] font-semibold text-white outline-none transition-all duration-300 hover:bg-[#0B3D91] focus-visible:ring-2 focus-visible:ring-[#0B3D91] focus-visible:ring-offset-2 active:scale-[0.97] disabled:opacity-70"
+                    type="button"
+                    onClick={() => setStatus("idle")}
+                    className="group inline-flex items-center gap-4 rounded-full py-2 pl-7 pr-2 text-[15px] font-semibold text-white outline-none transition-all duration-300 hover:bg-[#0B3D91] focus-visible:ring-2 focus-visible:ring-[#0B3D91] focus-visible:ring-offset-2 active:scale-[0.98]"
                     style={{ backgroundColor: C.ink }}
                   >
-                    {nlStatus === "sending" ? "Sending…" : "Send"}
+                    Try again
+                    <span className="grid h-10 w-10 place-items-center rounded-full bg-white" style={{ color: C.ink }}>
+                      <Arrow className="-rotate-45 transition-transform duration-300 group-hover:rotate-0" />
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={closeModal}
+                    className="rounded-full border bg-white px-6 py-3 text-[15px] font-semibold outline-none transition-[background-color,transform] duration-300 hover:bg-[#E8F0FF] focus-visible:ring-2 focus-visible:ring-[#0B3D91] active:scale-[0.98]"
+                    style={{ borderColor: C.border, color: C.ink }}
+                  >
+                    Close
                   </button>
                 </div>
-                <p
-                  role="alert"
-                  className={`overflow-hidden text-[13px] text-red-700 transition-all duration-300 ${nlError || nlStatus === "error" ? "mt-2 max-h-6 opacity-100" : "max-h-0 opacity-0"}`}
-                >
-                  {nlError || "Something went wrong. Please try again."}
-                </p>
-              </form>
+              </div>
             )}
-          </div>
 
-          {/* envelope sketch */}
-          <div className="cr-news-art mx-auto mt-8 h-44 w-44 md:mt-0 md:h-56 md:w-56">
-            <svg viewBox="0 0 100 100" fill="none" stroke={C.ink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-full w-full overflow-visible" aria-hidden="true">
-              <path d="M14 30h72v46H14z" fill="#fff" stroke="none" />
-              <D d="M18 26h64a4 4 0 0 1 4 4v42a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4V30a4 4 0 0 1 4-4z" />
-              <D d="M14 32l36 24 36-24" />
-              <D d="M14 72l26-20M86 72L60 52" strokeWidth="1.5" />
-              <D d="M74 10l-4 7M84 16l-7 3M64 6v8" strokeWidth="1.5" />
-            </svg>
+            {/* form: stays mounted during an error so nothing the person typed is lost */}
+            <form
+              key={formKey}
+              ref={formRef}
+              onSubmit={handleSubmit}
+              noValidate
+              className={status === "success" || status === "error" ? "hidden" : "mt-6 block"}
+            >
+              <fieldset disabled={sending} className="grid gap-5 sm:grid-cols-2">
+                <legend className="sr-only">Application form</legend>
+                {/* honeypot */}
+                <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
+
+                {[
+                  { key: "name", node: (
+                    <Field label="Full name" error={errors.name}>
+                      <input name="name" type="text" autoComplete="name" placeholder="Your name" aria-invalid={Boolean(errors.name)} className={`${inputCls} mt-2`} style={{ borderColor: errors.name ? "#DC2626" : C.border }} />
+                    </Field>) },
+                  { key: "email", node: (
+                    <Field label="Email" error={errors.email}>
+                      <input name="email" type="email" autoComplete="email" placeholder="you@example.com" aria-invalid={Boolean(errors.email)} className={`${inputCls} mt-2`} style={{ borderColor: errors.email ? "#DC2626" : C.border }} />
+                    </Field>) },
+                  { key: "phone", node: (
+                    <Field label="Phone">
+                      <input name="phone" type="tel" autoComplete="tel" placeholder="+91 00000 00000" className={`${inputCls} mt-2`} style={{ borderColor: C.border }} />
+                    </Field>) },
+                  { key: "role", node: (
+                    <Field label="Role" error={errors.role}>
+                      <select name="role" value={role} onChange={(e) => setRole(e.target.value)} aria-invalid={Boolean(errors.role)} className={`${inputCls} mt-2`} style={{ borderColor: errors.role ? "#DC2626" : C.border }}>
+                        <option value="">Choose a role</option>
+                        {ROLES.map((r) => <option key={r.title} value={r.title}>{r.title}</option>)}
+                        <option value="General application">General application</option>
+                      </select>
+                    </Field>) },
+                  { key: "link", wide: true, node: (
+                    <Field label="LinkedIn or portfolio (optional)">
+                      <input name="link" type="url" placeholder="https://" className={`${inputCls} mt-2`} style={{ borderColor: C.border }} />
+                    </Field>) },
+                  { key: "message", wide: true, node: (
+                    <Field label="Why Revenue Edge? (optional)">
+                      <textarea name="message" rows={4} placeholder="A few lines about you and what you’re looking for" className={`${inputCls} mt-2 resize-none`} style={{ borderColor: C.border }} />
+                    </Field>) },
+                ].map((f, i) => (
+                  <div
+                    key={f.key}
+                    className={`transition-[opacity,transform] duration-500 ease-out ${f.wide ? "sm:col-span-2" : ""} ${visible ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"}`}
+                    style={{ transitionDelay: visible ? `${900 + i * 70}ms` : "0ms" }}
+                  >
+                    {f.node}
+                  </div>
+                ))}
+
+                <div className={`sm:col-span-2 transition-[opacity,transform] duration-500 ease-out ${visible ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"}`} style={{ transitionDelay: visible ? "1350ms" : "0ms" }}>
+                  <button
+                    type="submit"
+                    disabled={sending}
+                    className="group inline-flex w-full items-center justify-between gap-4 rounded-full py-2 pl-7 pr-2 text-[15px] font-semibold text-white outline-none transition-all duration-300 hover:bg-[#0B3D91] focus-visible:ring-2 focus-visible:ring-[#0B3D91] focus-visible:ring-offset-2 active:scale-[0.99] disabled:opacity-80 sm:w-auto sm:justify-start"
+                    style={{ backgroundColor: C.ink }}
+                  >
+                    {sending ? "Sending…" : "Submit application"}
+                    <span className="grid h-10 w-10 place-items-center rounded-full bg-white" style={{ color: C.ink }}>
+                      {sending ? (
+                        <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                      ) : (
+                        <Arrow className="-rotate-45 transition-transform duration-300 group-hover:rotate-0" />
+                      )}
+                    </span>
+                  </button>
+                  <p className="mt-3 text-xs" style={{ color: C.muted }}>We reply within five working days. Your details are only used for hiring.</p>
+                </div>
+              </fieldset>
+            </form>
           </div>
-        </section>
-      </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

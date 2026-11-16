@@ -8,6 +8,7 @@ import {
   serviceCategories,
 } from "../../data/serviceData";
 import ServicesAccordion from "./ServicesAccordion";
+import ConsultationButton from "../../components/ConsultationButton";
 
 const HEADING_FONT = '"Archivo", ui-sans-serif, system-ui, sans-serif';
 
@@ -125,7 +126,14 @@ export default function ServicesPage({ categorySlug: propCat }) {
           /* 1. Hero: card reveal, word lift, image wipes in from the right */
           gsap
             .timeline({ defaults: { ease: "power4.out" } })
-            .from(".sv-hero", { y: 28, opacity: 0, duration: 0.9 })
+            .from(".sv-hero", {
+              clipPath: "inset(50% 0% 50% 0%)",
+              y: 12,
+              opacity: 0,
+              duration: 1,
+              transformOrigin: "center center",
+              clearProps: "clipPath,opacity,transform,transformOrigin",
+            })
             .from(".sv-crumb", { x: -24, opacity: 0, duration: 0.6 }, "-=0.6")
             .from(".sv-label", { y: 16, opacity: 0, duration: 0.6 }, "-=0.55")
             .from(".sv-hero .sv-word", { yPercent: 115, duration: 1.05, stagger: 0.06 }, "-=0.35")
@@ -289,6 +297,7 @@ export default function ServicesPage({ categorySlug: propCat }) {
               <Words text={heroTitle} />
             </span>
           </h1>
+          <ConsultationButton href="/contact" className="mt-8" />
         </div>
 
         <div className="sv-hero-imgwrap relative mx-auto mt-10 h-52 w-full max-w-md overflow-hidden rounded-[1.5rem] md:mt-0 md:h-96">

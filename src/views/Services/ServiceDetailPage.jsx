@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { deferGsap } from "../../deferGsap";
 import { getServiceCategory, getServiceItem } from "../../data/serviceData";
+import ConsultationButton from "../../components/ConsultationButton";
 
 /* Needs this as the first line of src/index.css:
    @import url("https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&display=swap"); */
@@ -220,7 +221,14 @@ export default function ServiceDetailPage({ categorySlug: propCat, serviceSlug: 
           /* 1. Hero: card reveal, title rise, image wipes in from the right and drifts */
           const hero = gsap
             .timeline({ defaults: { ease: "power4.out" } })
-            .from(".sd-hero", { y: 28, opacity: 0, duration: 0.9 })
+            .from(".sd-hero", {
+              clipPath: "inset(50% 0% 50% 0%)",
+              y: 12,
+              opacity: 0,
+              duration: 1,
+              transformOrigin: "center center",
+              clearProps: "clipPath,opacity,transform,transformOrigin",
+            })
             .from(".sd-crumb", { x: -24, opacity: 0, duration: 0.6 }, "-=0.6")
             .from(".sd-label", { y: 16, opacity: 0, duration: 0.6 }, "-=0.5")
             .from(".sd-hero .sd-word", { yPercent: 115, duration: 1.05, stagger: 0.06 }, "-=0.35");
@@ -417,6 +425,7 @@ export default function ServiceDetailPage({ categorySlug: propCat, serviceSlug: 
                 {service.tagline}
               </p>
             )}
+            <ConsultationButton href="/contact" className="mt-8" />
           </div>
 
           <ImageSlot
@@ -430,8 +439,8 @@ export default function ServiceDetailPage({ categorySlug: propCat, serviceSlug: 
         {/* 2. Statement card */}
         <section
           className="sd-overview mx-auto mt-6 max-w-6xl overflow-hidden rounded-[2rem] px-6 py-12 text-white sm:rounded-[2.5rem] sm:px-12 sm:py-16"
-          style={{
-            backgroundColor: C.primaryHover,
+        style={{
+            backgroundColor: C.primary,
             backgroundImage:
               "radial-gradient(60% 80% at 10% 0%, rgba(255,255,255,0.16), transparent 70%), radial-gradient(50% 70% at 100% 100%, rgba(0,16,34,0.35), transparent 70%)",
           }}

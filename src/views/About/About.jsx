@@ -155,7 +155,14 @@ export default function AboutPage({ images = DEFAULT_IMAGES, contactHref = "/con
           /* 1. Hero: smooth whole-card reveal, then word lift and image wipe */
           gsap
             .timeline({ defaults: { ease: "power4.out" } })
-            .from(".ab-hero", { y: 28, opacity: 0, duration: 0.9 })
+            .from(".ab-hero", {
+              clipPath: "inset(50% 0% 50% 0%)",
+              y: 12,
+              opacity: 0,
+              duration: 1,
+              transformOrigin: "center center",
+              clearProps: "clipPath,opacity,transform,transformOrigin",
+            })
             .from(".ab-hero-badge", { y: 16, opacity: 0, duration: 0.6 }, "-=0.6")
             .from(".ab-hero .ab-word", { yPercent: 115, duration: 1.05, stagger: 0.06 }, "-=0.35")
             .fromTo(
@@ -292,7 +299,7 @@ export default function AboutPage({ images = DEFAULT_IMAGES, contactHref = "/con
             </div>
 
             <div className="ab-hero-imgwrap relative mx-auto mt-10 h-56 w-full max-w-sm overflow-hidden rounded-[1.5rem] md:mt-0 md:h-72">
-              <img src="./img3.jpg" className="h-full w-full scale-110 object-cover" alt="" />
+              <img src="./img20.jpg" className="h-full w-full scale-110 object-cover" alt="" />
             </div>
           </div>
         </section>

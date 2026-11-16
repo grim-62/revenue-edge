@@ -10,12 +10,14 @@ export default function AdminLayout({
 }) {
   const [navOpen, setNavOpen] = useState(false);
   const { pathname } = useLocation();
-  const activeItem = navItems.find((item) => item.end
-    ? pathname === item.href
-    : pathname === item.href || pathname.startsWith(`${item.href}/`));
+  const activeItem = navItems.find((item) =>
+    item.end
+      ? pathname === item.href
+      : pathname === item.href || pathname.startsWith(`${item.href}/`),
+  );
 
   return (
-    <div className="min-h-screen bg-[#F1F6FF]">
+    <div className="min-h-screen bg-[#bcd0ff] ">
       <button
         type="button"
         aria-label="Close admin navigation"
@@ -31,10 +33,7 @@ export default function AdminLayout({
         }}
         aria-label="Admin navigation"
       >
-        <Link
-          to={siteHref}
-          className="ad-side-item mb-8 flex items-center gap-3 px-2 text-lg font-bold outline-none focus-visible:ring-2 focus-visible:ring-white/60"
-        >
+        <div className="ad-side-item mb-8 flex items-center gap-3 px-2 text-lg font-bold outline-none focus-visible:ring-2 focus-visible:ring-white/60">
           <div className="mix-blend-screen">
             <img
               src="/reta.webp"
@@ -45,7 +44,7 @@ export default function AdminLayout({
               alt="Reta"
             />
           </div>
-        </Link>
+        </div>
 
         <nav className="space-y-1">
           {navItems.map((item) => {
@@ -59,12 +58,20 @@ export default function AdminLayout({
                   setNavOpen(false);
                   window.scrollTo({ top: 0 });
                 }}
-                className={({ isActive }) => `ad-side-item group relative flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[15px] font-semibold outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-white/60 ${isActive ? "bg-white/12 text-white" : "text-white/65 hover:bg-white/8 hover:text-white"}`}
+                className={({ isActive }) =>
+                  `ad-side-item group relative flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[15px] font-semibold outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-white/60 ${isActive ? "bg-white/12 text-white" : "text-white/65 hover:bg-white/8 hover:text-white"}`
+                }
               >
-                <span className={`absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-full bg-[#BCD0FF] transition-all duration-300 ${active ? "opacity-100" : "scale-y-0 opacity-0"}`} />
+                <span
+                  className={`absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-full bg-[#BCD0FF] transition-all duration-300 ${active ? "opacity-100" : "scale-y-0 opacity-0"}`}
+                />
                 {item.icon}
                 {item.label}
-                {item.badge > 0 && <span className="ml-auto rounded-full bg-[#BCD0FF] px-2 py-0.5 text-xs font-bold text-[#001022]">{item.badge}</span>}
+                {item.badge > 0 && (
+                  <span className="ml-auto rounded-full bg-[#BCD0FF] px-2 py-0.5 text-xs font-bold text-[#001022]">
+                    {item.badge}
+                  </span>
+                )}
               </NavLink>
             );
           })}

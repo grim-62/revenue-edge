@@ -14,12 +14,12 @@ const C = {
 };
 
 const DEFAULT_LINKS = [
-  { label: "Home", href: "/" },
-  { label: "Services", href: "/services" },
-  { label: "About", href: "/about" },
-  { label: "Reviews", href: "/review" },
-  { label: "Join Us", href: "/careers" },
-  { label: "Contact", href: "/contact" },
+  // { label: "Home", href: "/" },
+  { label: "Our Services", href: "/services" },
+  { label: "About Us", href: "/about" },
+  // { label: "Reviews", href: "/review" },
+  { label: "Careers", href: "/careers" },
+  { label: "Contact Us", href: "/contact" },
 ];
 
 const DEFAULT_SERVICES = [
@@ -176,6 +176,7 @@ export default function Footer({
               </p>
             </div>
             <ConsultationButton
+            className=" w-fit"
               href={ctaHref}
               variant="light"
             />

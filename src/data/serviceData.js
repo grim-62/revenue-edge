@@ -30,7 +30,7 @@ const categoryDefinitions = [
     art: "chart",
     tag: "Cleaner books",
     heroImage: "/img1.jpg",
-    partnerImage: "/img2.jpg",
+    partnerImage: "/img10.jpg",
     eyebrow: "Reliable records. Better decisions.",
     description:
       "Reliable accounting and bookkeeping systems that give you cleaner reporting, stronger controls, and confidence in every decision.",
@@ -90,7 +90,7 @@ const categoryDefinitions = [
     art: "coins",
     tag: "Plan the next step",
     heroImage: "/img3.jpg",
-    partnerImage: "/img7.jpg",
+    partnerImage: "/img18.jpg",
     eyebrow: "A sharper view of what is next",
     description:
       "Senior guidance for the structures, plans, funding, and transitions that shape the future of your business.",
@@ -136,18 +136,18 @@ const categoryDefinitions = [
     services: [
       "Foreign Tax",
       "Business Tax",
+      "IT Tax Management",
       "Individual Tax",
       "Tax Returns",
       "Tax Management",
       "Tax Planning",
       "Tax Minimisation",
       "Tax Compliance",
-      "IT Tax Management",
     ],
     art: "calc",
     tag: "Lodged on time",
     heroImage: "/img4.jpg",
-    partnerImage: "/img6.jpg",
+    partnerImage: "/img13.jpg",
     eyebrow: "Tax strategy and compliance",
     description:
       "Practical tax advice for individuals and businesses, from accurate returns to long-range planning that keeps more of your money working for you.",

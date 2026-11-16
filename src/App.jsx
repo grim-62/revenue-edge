@@ -1,5 +1,6 @@
-import { lazy, Suspense, useLayoutEffect, useRef } from "react";
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Outlet, Route, Routes, useLocation, useOutletContext, useParams } from "react-router-dom";
+import Loader from "./components/Loader";
 import Shaderbackground from "./components/Shaderbackground";
 import RootLayout from "./layouts/RootLayout";
 import Home from "./views/Home/Home";
@@ -88,29 +89,40 @@ const WrapperRootLayout = ({ children }) => {
   );
 };
 const App = () => {
+  const [isStarting, setIsStarting] = useState(true);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      window.scrollTo(0, 0);
+      setIsStarting(false);
+    }, 1200);
+    return () => window.clearTimeout(timeoutId);
+  }, []);
+
   return (
-    
+    <>
+      {isStarting && <Loader fullScreen />}
         <Routes>
           <Route element={<WrapperRootLayout />}>
             <Route path="/" element={<Home />} />
-            <Route path="/services" element={<Suspense fallback={null}><ServicesPage /></Suspense>} />
-            <Route path="/service/:categorySlug" element={<Suspense fallback={null}><ServiceCategoryRoute /></Suspense>} />
-            <Route path="/service/:categorySlug/:serviceSlug" element={<Suspense fallback={null}><ServiceDetailRoute /></Suspense>} />
-            <Route path="/about" element={<Suspense fallback={null}><AboutPage /></Suspense>} />
-            <Route path="/contact" element={<Suspense fallback={null}><ContactPage /></Suspense>} />
-            <Route path="/careers" element={<Suspense fallback={null}><CareerPage /></Suspense>} />
-            <Route path='/review' element={<Suspense fallback={null}><ReviewsPage /></Suspense>} />
+            <Route path="/services" element={<Suspense fallback={<Loader fullScreen />}><ServicesPage /></Suspense>} />
+            <Route path="/service/:categorySlug" element={<Suspense fallback={<Loader fullScreen />}><ServiceCategoryRoute /></Suspense>} />
+            <Route path="/service/:categorySlug/:serviceSlug" element={<Suspense fallback={<Loader fullScreen />}><ServiceDetailRoute /></Suspense>} />
+            <Route path="/about" element={<Suspense fallback={<Loader fullScreen />}><AboutPage /></Suspense>} />
+            <Route path="/contact" element={<Suspense fallback={<Loader fullScreen />}><ContactPage /></Suspense>} />
+            <Route path="/careers" element={<Suspense fallback={<Loader fullScreen />}><CareerPage /></Suspense>} />
+            <Route path='/review' element={<Suspense fallback={<Loader fullScreen />}><ReviewsPage /></Suspense>} />
           </Route>
-            <Route path='/admin/login' element={<Suspense fallback={null}><AdminLoginPage /></Suspense>} />
-          <Route path="/admin" element={<Suspense fallback={null}><AdminDashboard /></Suspense>}>
-            <Route index element={<Suspense fallback={null}><AdminOverviewRoute /></Suspense>} />
-            <Route path="careers" element={<Suspense fallback={null}><AdminCareerRoute /></Suspense>} />
-            <Route path="inquiries" element={<Suspense fallback={null}><AdminInquiryRoute /></Suspense>} />
-            <Route path="reviews" element={<Suspense fallback={null}><AdminReviewRoute /></Suspense>} />
+            <Route path='/admin/login' element={<Suspense fallback={<Loader fullScreen />}><AdminLoginPage /></Suspense>} />
+          <Route path="/admin" element={<Suspense fallback={<Loader fullScreen />}><AdminDashboard /></Suspense>}>
+            <Route index element={<Suspense fallback={<Loader fullScreen />}><AdminOverviewRoute /></Suspense>} />
+            <Route path="careers" element={<Suspense fallback={<Loader fullScreen />}><AdminCareerRoute /></Suspense>} />
+            <Route path="inquiries" element={<Suspense fallback={<Loader fullScreen />}><AdminInquiryRoute /></Suspense>} />
+            <Route path="reviews" element={<Suspense fallback={<Loader fullScreen />}><AdminReviewRoute /></Suspense>} />
           </Route>
-          <Route path="*" element={<Suspense fallback={null}><NotFoundPage /></Suspense>} />
+          <Route path="*" element={<Suspense fallback={<Loader fullScreen />}><NotFoundPage /></Suspense>} />
         </Routes>
-  
+    </>
   );
 };
 
