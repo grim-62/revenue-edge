@@ -14,7 +14,7 @@ const ServicesPage = lazy(() => import("./views/Services/ServicesPage"));
 const ServiceCategoryPage = lazy(() => import("./views/Services/ServiceCategoryPage"));
 const CareerPage = lazy(() => import("./views/Career/Careerspage"));
 const AdminDashboard = lazy(() => import("./views/Admin/AdminDashboard"));
-const AdminLoginPage = lazy(() => import("./views/auth/Adminloginpage"));
+const AdminLoginPage = lazy(() => import("./views/Auth/AdminLoginPage"));
 const AdminOverview = lazy(() => import("./views/Admin/AdminOverview"));
 const AdminCareer = lazy(() => import("./views/Admin/AdminCareer"));
 const AdminInquiry = lazy(() => import("./views/Admin/AdminInquiry"));
